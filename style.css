@@ -1,0 +1,38 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.dashboard-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+.work-order-item {
+    transition: background-color 0.2s;
+}
+
+.work-order-item:hover {
+    background-color: #f8fafc; /* Tailwind's slate-50 */
+}
+
