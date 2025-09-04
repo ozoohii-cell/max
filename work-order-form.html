@@ -9,27 +9,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans KR', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
-        .work-order-item { transition: background-color 0.2s; }
-        .work-order-item:hover { background-color: #f7fafc; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-slate-100 text-slate-800">
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">맥스콘</h1>
+             <a href="index.html" class="text-3xl sm:text-4xl font-bold text-slate-900">맥스콘</a>
             <p class="text-slate-600 mt-2">모든 작업 내역을 웹에서 체계적으로 관리하세요.</p>
         </header>
 
         <div id="supabase-warning" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6" role="alert">
             <p class="font-bold">중요!</p>
-            <p>Supabase URL과 Key를 입력해야 앱이 정상적으로 작동합니다.</p>
+            <p>app.js 파일에서 Supabase URL과 Key를 입력해야 앱이 정상적으로 작동합니다.</p>
         </div>
 
         <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -37,16 +29,16 @@
             <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl shadow-lg self-start">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">📝 작업지시서</h2>
-                    <button id="new-form-button" class="hidden px-3 py-1 bg-slate-200 text-slate-700 text-sm rounded-md hover:bg-slate-300">새로 작성</button>
+                    <button id="new-form-button" class="hidden px-3 py-1 bg-slate-200 text-slate-700 text-sm rounded-md hover:bg-slate-300">새로작성</button>
                 </div>
                 <form id="work-order-form" class="space-y-4">
                     <input type="hidden" id="editing_work_order_id">
                     <!-- 고객 및 차량 정보 -->
                     <fieldset class="border p-4 rounded-lg">
-                        <legend class="text-lg font-semibold px-2">고객/차량 정보</legend>
+                        <legend class="text-lg font-semibold px-2">고객/차량정보</legend>
                         <div class="space-y-4">
                             <div>
-                                <label for="customer-search" class="block text-sm font-medium text-slate-700 mb-1">고객 검색</label>
+                                <label for="customer-search" class="block text-sm font-medium text-slate-700 mb-1">고객검색</label>
                                 <div class="flex items-center gap-2">
                                     <div class="relative flex-grow">
                                         <input type="text" id="customer-search" name="customer_search" required autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" placeholder="고객 이름으로 검색...">
@@ -57,7 +49,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label for="car-search" class="block text-sm font-medium text-slate-700 mb-1">차량 검색</label>
+                                <label for="car-search" class="block text-sm font-medium text-slate-700 mb-1">차량검색</label>
                                 <div class="flex items-center gap-2">
                                     <div class="relative flex-grow">
                                         <input type="text" id="car-search" name="car_search" required autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" placeholder="차량 번호로 검색...">
@@ -71,14 +63,14 @@
                         </div>
                     </fieldset>
                      <fieldset class="border p-4 rounded-lg">
-                        <legend class="text-lg font-semibold px-2">작업 정보</legend>
+                        <legend class="text-lg font-semibold px-2">작업정보</legend>
                         <div class="space-y-4">
                              <div>
                                 <label for="out_date" class="block text-sm font-medium text-slate-700 mb-1">출고일시</label>
                                 <input type="datetime-local" id="out_date" name="out_date" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-1">작업 항목</label>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">작업항목</label>
                                 <div id="services-chips-container" class="flex flex-wrap gap-2 p-2 border rounded-lg bg-slate-50">
                                     <!-- 작업 항목 칩 -->
                                 </div>
@@ -89,10 +81,10 @@
                         </div>
                     </fieldset>
                     <fieldset class="border p-4 rounded-lg">
-                        <legend class="text-lg font-semibold px-2">결제 정보</legend>
+                        <legend class="text-lg font-semibold px-2">결제정보</legend>
                         <div class="space-y-4">
                             <div>
-                                <label for="total_amount" class="block text-sm font-medium text-slate-700 mb-1">총 금액</label>
+                                <label for="total_amount" class="block text-sm font-medium text-slate-700 mb-1">총금액</label>
                                 <input type="number" id="total_amount" name="total_amount" required class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100" readonly placeholder="0">
                             </div>
                             <div id="payment-details" class="hidden space-y-4">
@@ -102,11 +94,11 @@
                                         <input type="number" id="discount_amount" name="discount_amount" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
                                     </div>
                                     <div class="col-span-2">
-                                        <label for="final_amount" class="block text-sm font-medium text-slate-700 mb-1">최종 금액</label>
+                                        <label for="final_amount" class="block text-sm font-medium text-slate-700 mb-1">최종금액</label>
                                         <input type="number" id="final_amount" name="final_amount" readonly class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100" placeholder="0">
                                     </div>
                                     <div>
-                                        <label for="payment_status" class="block text-sm font-medium text-slate-700 mb-1">결제 상태</label>
+                                        <label for="payment_status" class="block text-sm font-medium text-slate-700 mb-1">결제상태</label>
                                         <select id="payment_status" name="payment_status" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
                                             <option value="미결제">미결제</option>
                                             <option value="완납">완납</option>
@@ -114,7 +106,7 @@
                                         </select>
                                     </div>
                                      <div>
-                                        <label for="payment_method" class="block text-sm font-medium text-slate-700 mb-1">결제 방법</label>
+                                        <label for="payment_method" class="block text-sm font-medium text-slate-700 mb-1">결제방법</label>
                                         <select id="payment_method" name="payment_method" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
                                             <option value="">선택</option>
                                             <option value="카드">카드</option>
@@ -139,8 +131,8 @@
                         </div>
                         <div id="edit-mode-container" class="hidden grid grid-cols-3 gap-2">
                             <button type="submit" id="update-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700">수정하기</button>
-                            <button type="button" id="stock-button" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">재고 사용</button>
-                            <button type="button" id="payment-button" class="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600">결제 처리</button>
+                            <button type="button" id="stock-button" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">재고사용</button>
+                            <button type="button" id="payment-button" class="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600">결제처리</button>
                         </div>
                     </div>
                 </form>
@@ -156,122 +148,10 @@
         </main>
     </div>
 
-    <!-- 고객 등록 모달 -->
-    <div id="customer-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md relative">
-            <button type="button" id="close-customer-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <h2 class="text-2xl font-bold mb-6">👤 신규 고객 등록</h2>
-            <form id="new-customer-form" class="space-y-4">
-                 <div>
-                    <label for="new_customer_name" class="block text-sm font-medium text-slate-700 mb-1">고객명 <span class="text-red-500">*</span></label>
-                    <input type="text" id="new_customer_name" name="customer_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                </div>
-                <div>
-                    <label for="new_phone_number" class="block text-sm font-medium text-slate-700 mb-1">연락처</label>
-                    <input type="text" id="new_phone_number" name="phone_number" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                </div>
-                <div>
-                    <label for="new_group_type" class="block text-sm font-medium text-slate-700 mb-1">고객 구분</label>
-                    <select id="new_group_type" name="group_type" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                        <option value="">-- 선택 안함 --</option>
-                        <option value="개인">개인</option>
-                        <option value="회사">회사</option>
-                        <option value="신차카마스터">신차카마스터</option>
-                        <option value="중고차카마스터">중고차카마스터</option>
-                    </select>
-                </div>
-                <div id="affiliated-company-wrapper" class="hidden space-y-2">
-                    <label for="affiliated-company-search" class="block text-sm font-medium text-slate-700">소속 회사 검색</label>
-                    <div class="relative">
-                        <input type="text" id="affiliated-company-search" autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="소속 회사 이름으로 검색...">
-                        <input type="hidden" id="affiliated_company_id" name="affiliated_company_id">
-                        <div id="affiliated-company-suggestions" class="hidden absolute z-30 w-full bg-white border border-slate-300 rounded-lg mt-1 max-h-40 overflow-y-auto"></div>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="cancel-customer-button" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
-                    <button type="submit" id="save-customer-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 차량 등록 모달 -->
-    <div id="car-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md relative">
-            <button type="button" id="close-car-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <h2 class="text-2xl font-bold mb-6">🚗 신규 차량 등록</h2>
-            <form id="new-car-form" class="space-y-4">
-                <div>
-                    <label for="new_car_plate_number" class="block text-sm font-medium text-slate-700 mb-1">차량번호 <span class="text-red-500">*</span></label>
-                    <input type="text" id="new_car_plate_number" name="car_plate_number" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                </div>
-                <div>
-                    <label for="new_car_model" class="block text-sm font-medium text-slate-700 mb-1">차종</label>
-                    <div class="relative">
-                        <input type="text" id="new_car_model" name="car_model" autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="차종 검색...">
-                        <div id="car-model-suggestions" class="hidden absolute z-30 w-full bg-white border border-slate-300 rounded-lg mt-1 max-h-40 overflow-y-auto"></div>
-                    </div>
-                </div>
-                <div>
-                    <label for="new_chassis_number" class="block text-sm font-medium text-slate-700 mb-1">차대번호</label>
-                    <input type="text" id="new_chassis_number" name="chassis_number" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                </div>
-                <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="cancel-car-button" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
-                    <button type="submit" id="save-car-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <div id="modal-container"></div>
+    <div id="notification-container"></div>
     
-    <!-- 상세 작업 항목 추가 모달 -->
-    <div id="service-item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
-            <button type="button" id="close-service-item-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <h2 id="service-item-modal-title" class="text-2xl font-bold mb-6">신규 상세 작업 항목 추가</h2>
-            <form id="new-service-item-form" class="space-y-4">
-                <input type="hidden" id="new_item_category_id" name="service_category_id">
-                <div>
-                    <label for="new_item_name" class="block text-sm font-medium text-slate-700 mb-1">항목명 <span class="text-red-500">*</span></label>
-                    <input type="text" id="new_item_name" name="item_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label for="new_price_a" class="block text-sm font-medium text-slate-700 mb-1">가격 A (개인)</label>
-                        <input type="number" id="new_price_a" name="price_a" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
-                    </div>
-                    <div>
-                        <label for="new_price_b" class="block text-sm font-medium text-slate-700 mb-1">가격 B (회사)</label>
-                        <input type="number" id="new_price_b" name="price_b" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
-                    </div>
-                    <div>
-                        <label for="new_price_c" class="block text-sm font-medium text-slate-700 mb-1">가격 C (카마스터)</label>
-                        <input type="number" id="new_price_c" name="price_c" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
-                    </div>
-                </div>
-                <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="cancel-service-item-button" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
-                    <button type="submit" id="save-service-item-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 상세 작업 항목 템플릿 -->
-    <template id="service-item-template">
+    <template id="service-item-template-content">
         <div class="service-item-row p-3 bg-slate-50 border rounded-lg space-y-2">
             <div class="grid grid-cols-10 gap-2 items-center">
                 <div class="col-span-10 sm:col-span-8 relative">
@@ -282,711 +162,28 @@
                 <div class="col-span-8 sm:col-span-2">
                     <input type="number" class="applied_price w-full px-3 py-2 border border-slate-300 rounded-md" placeholder="금액">
                 </div>
-                <button type="button" class="remove-service-item-button col-span-2 sm:col-span-10 mt-2 sm:mt-0 w-full bg-red-100 text-red-700 text-xs py-1 rounded-md hover:bg-red-200">항목 삭제</button>
+                <button type="button" class="remove-service-item-button col-span-2 sm:col-span-10 mt-2 sm:mt-0 w-full bg-red-100 text-red-700 text-xs py-1 rounded-md hover:bg-red-200">항목삭제</button>
             </div>
         </div>
     </template>
-
-
-    <div id="notification" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl transition-transform transform">
-        <p id="notification-message"></p>
-    </div>
-
+    
+    <script src="app.js"></script>
     <script>
-        const SUPABASE_URL = 'https://aeleuwbpvtpmgnomftlh.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbGV1d2JwdnRwbWdub21mdGxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2OTEzNjgsImV4cCI6MjA3MjI2NzM2OH0.0ov52DVEOrYn7TbcP0Zu-206ZnrHPo5CbWsHm3QXHvo';
-        let supabaseClient;
-        let allCustomers = [], allCars = [], allServiceCategories = [], allServiceItems = [], allAffiliatedCompanies = [], allCarNames = [];
-        let selectedCustomer = null;
-        let currentEditingOrder = null;
-
-        const supabaseWarning = document.getElementById('supabase-warning');
-        const form = document.getElementById('work-order-form');
-        const workOrderList = document.getElementById('work-order-list');
-        const listLoader = document.getElementById('list-loader');
-        const saveButton = document.getElementById('save-button');
-        const buttonText = document.getElementById('button-text');
-        const buttonSpinner = document.getElementById('button-spinner');
-        const notification = document.getElementById('notification');
-        const notificationMessage = document.getElementById('notification-message');
-        const totalAmountInput = document.getElementById('total_amount');
-        const discountAmountInput = document.getElementById('discount_amount');
-        const finalAmountInput = document.getElementById('final_amount');
-        const customerSearchInput = document.getElementById('customer-search');
-        const customerSuggestionsContainer = document.getElementById('customer-suggestions');
-        const customerIdInput = document.getElementById('customer_id');
-        const carSearchInput = document.getElementById('car-search');
-        const carSuggestionsContainer = document.getElementById('car-suggestions');
-        const carIdInput = document.getElementById('car_id');
-        const selectedCarModelText = document.getElementById('selected-car-model');
-        const addCustomerButton = document.getElementById('add-customer-button');
-        const customerModal = document.getElementById('customer-modal');
-        const addCarButton = document.getElementById('add-car-button');
-        const carModal = document.getElementById('car-modal');
-        const serviceDetailsContainer = document.getElementById('service-details-container');
-        const editingWorkOrderIdInput = document.getElementById('editing_work_order_id');
-        const newFormButton = document.getElementById('new-form-button');
-        const paymentDetails = document.getElementById('payment-details');
-        const createModeContainer = document.getElementById('create-mode-container');
-        const editModeContainer = document.getElementById('edit-mode-container');
-        const paymentButton = document.getElementById('payment-button');
-
-        // 모달 관련
-        const newCustomerForm = document.getElementById('new-customer-form');
-        const newCarForm = document.getElementById('new-car-form');
-        const cancelCustomerButton = document.getElementById('cancel-customer-button');
-        const cancelCarButton = document.getElementById('cancel-car-button');
-        const newGroupTypeSelect = document.getElementById('new_group_type');
-        const affiliatedCompanyWrapper = document.getElementById('affiliated-company-wrapper');
-        const affiliatedCompanySearchInput = document.getElementById('affiliated-company-search');
-        const affiliatedCompanySuggestionsContainer = document.getElementById('affiliated-company-suggestions');
-        const affiliatedCompanyIdInput = document.getElementById('affiliated_company_id');
-        const newCarModelInput = document.getElementById('new_car_model');
-        const carModelSuggestionsContainer = document.getElementById('car-model-suggestions');
-        
-        // 상세 작업 항목 모달 관련 변수
-        const serviceItemModal = document.getElementById('service-item-modal');
-        const newServiceItemForm = document.getElementById('new-service-item-form');
-        const serviceItemModalTitle = document.getElementById('service-item-modal-title');
-        const newServiceItemCategoryIdInput = document.getElementById('new_item_category_id');
-        const cancelServiceItemButton = document.getElementById('cancel-service-item-button');
-        
-        // ✨ [신규] 모달 닫기 버튼
-        const closeCustomerModalButton = document.getElementById('close-customer-modal');
-        const closeCarModalButton = document.getElementById('close-car-modal');
-        const closeServiceItemModalButton = document.getElementById('close-service-item-modal');
-
-
-        function populateServiceChips(data) {
-            const container = document.getElementById('services-chips-container');
-            container.innerHTML = '';
-            data.forEach(item => {
-                const chip = document.createElement('button');
-                chip.type = 'button';
-                chip.className = 'px-3 py-1.5 border border-slate-300 rounded-full text-sm font-medium text-slate-700 hover:bg-slate-100 transition';
-                chip.textContent = item.service_name;
-                chip.dataset.serviceCategoryId = item.service_category_id;
-                chip.addEventListener('click', () => {
-                    const isActive = chip.classList.toggle('bg-blue-600');
-                    chip.classList.toggle('text-white');
-                    chip.classList.toggle('border-blue-600');
-                    const detailId = `service-detail-block-${item.service_category_id}`;
-                    if (isActive) {
-                        const block = document.createElement('div');
-                        block.id = detailId;
-                        block.className = "p-3 border rounded-lg";
-                        block.innerHTML = `
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-bold">${item.service_name}</h4>
-                                <div class="flex gap-2">
-                                    <button type="button" class="create-service-item-button text-sm bg-green-100 text-green-700 px-2 py-1 rounded-md hover:bg-green-200" data-category-id="${item.service_category_id}" data-category-name="${item.service_name}">상세항목추가</button>
-                                    <button type="button" class="add-service-item-button text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200" data-category-id="${item.service_category_id}">+ 항목 추가</button>
-                                </div>
-                            </div>
-                            <div class="service-items-wrapper space-y-2"></div>
-                        `;
-                        serviceDetailsContainer.appendChild(block);
-                        addNewServiceItemRow(block.querySelector('.service-items-wrapper'), item.service_category_id);
-                        block.querySelector('.add-service-item-button').addEventListener('click', (e) => {
-                            addNewServiceItemRow(block.querySelector('.service-items-wrapper'), e.target.dataset.categoryId);
-                        });
-                    } else {
-                        const block = document.getElementById(detailId);
-                        if (block) serviceDetailsContainer.removeChild(block);
-                    }
-                    updateTotalAmount();
-                });
-                container.appendChild(chip);
-            });
-        }
-
-        function addNewServiceItemRow(wrapper, categoryId) {
-            const template = document.getElementById('service-item-template').content.cloneNode(true);
-            const row = template.querySelector('.service-item-row');
-            const searchInput = row.querySelector('.service-item-search');
-            const idInput = row.querySelector('.service_item_id');
-            const priceInput = row.querySelector('.applied_price');
-            const suggestionsContainer = row.querySelector('.service-item-suggestions');
-            
-            searchInput.addEventListener('input', () => {
-                const value = searchInput.value.toLowerCase();
-                const categoryItems = allServiceItems.filter(i => i.service_category_id == categoryId);
-                suggestionsContainer.innerHTML = '';
-                if (!value) { suggestionsContainer.classList.add('hidden'); return; }
-                const filtered = categoryItems.filter(i => i.item_name.toLowerCase().includes(value));
-                if(filtered.length > 0) {
-                    filtered.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer text-sm';
-                        div.textContent = item.item_name;
-                        div.addEventListener('click', () => {
-                            searchInput.value = item.item_name;
-                            idInput.value = item.item_id;
-                            if (selectedCustomer) {
-                                const group = selectedCustomer.group_type;
-                                let price = item.price_a;
-                                if (group === '회사') price = item.price_b;
-                                if (group === '신차카마스터' || group === '중고차카마스터') price = item.price_c;
-                                priceInput.value = price;
-                            } else {
-                                priceInput.value = item.price_a;
-                                showNotification('고객을 먼저 선택하면 등급별 단가가 적용됩니다.', 'info');
-                            }
-                            suggestionsContainer.classList.add('hidden');
-                            updateTotalAmount();
-                        });
-                        suggestionsContainer.appendChild(div);
-                    });
-                    suggestionsContainer.classList.remove('hidden');
-                }
-            });
-            priceInput.addEventListener('input', updateTotalAmount);
-            row.querySelector('.remove-service-item-button').addEventListener('click', () => {
-                row.remove();
-                updateTotalAmount();
-            });
-            wrapper.appendChild(row);
-        }
-
-        function updateTotalAmount() {
-            let total = 0;
-            document.querySelectorAll('.applied_price').forEach(input => {
-                total += parseFloat(input.value) || 0;
-            });
-            totalAmountInput.value = total;
-            calculateFinalAmount();
-        }
-
-        async function loadFormData() {
-            try {
-                const [customers, cars, service_categories, service_items, affiliated_companies, car_names] = await Promise.all([
-                    supabaseClient.from('customers').select('*'),
-                    supabaseClient.from('cars').select('*'),
-                    supabaseClient.from('service_categories').select('*'),
-                    supabaseClient.from('service_items').select('*'),
-                    supabaseClient.from('affiliated_companies').select('*'),
-                    supabaseClient.from('car_name').select('car_name')
-                ]);
-                if (customers.error) throw customers.error;
-                if (cars.error) throw cars.error;
-                if (service_categories.error) throw service_categories.error;
-                if (service_items.error) throw service_items.error;
-                if (affiliated_companies.error) throw affiliated_companies.error;
-                if (car_names.error) throw car_names.error;
-
-                allCustomers = customers.data;
-                allCars = cars.data;
-                allServiceCategories = service_categories.data;
-                allServiceItems = service_items.data;
-                allAffiliatedCompanies = affiliated_companies.data;
-                allCarNames = car_names.data.map(c => c.car_name);
-
-                populateServiceChips(service_categories.data);
-            } catch (error) {
-                console.error('Error loading form data:', error);
-                showNotification('폼 데이터 로딩 실패. 콘솔을 확인하세요.', 'error');
-            }
-        }
-
-        function calculateFinalAmount() {
-            const total = parseFloat(totalAmountInput.value) || 0;
-            const discount = parseFloat(discountAmountInput.value) || 0;
-            finalAmountInput.value = total - discount;
-        }
-
-        async function fetchWorkOrders() {
-            listLoader.classList.remove('hidden');
-            workOrderList.innerHTML = '';
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('work_orders')
-                    .select(`*, customers(*), cars(*), work_order_services(*, service_items(*, service_categories(*)))`)
-                    .order('in_date', { ascending: false });
-
-                if (error) throw error;
-
-                if (data.length === 0) {
-                     workOrderList.innerHTML = `<div class="text-center bg-white p-6 rounded-lg shadow-sm"><p class="text-slate-500">등록된 작업이 없습니다.</p></div>`;
-                } else {
-                    data.forEach(order => {
-                        const orderElement = document.createElement('div');
-                        orderElement.className = 'bg-white p-5 rounded-xl shadow-md cursor-pointer work-order-item';
-
-                        const servicesText = order.work_order_services
-                            .map(s => `<strong>${s.service_items.service_categories.service_name}:</strong> ${s.service_items.item_name} (${s.applied_price.toLocaleString()}원)`)
-                            .join('<br>') || '작업 내역 없음';
-
-                        const inDate = new Date(order.in_date).toLocaleString('ko-KR');
-                        const outDate = order.out_date ? new Date(order.out_date).toLocaleString('ko-KR') : '미정';
-                        const carInfo = `${order.cars.car_plate_number} (${order.cars.car_model || '차종 미입력'})`;
-
-                        orderElement.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <h3 class="text-lg font-bold text-slate-900">${order.customers.customer_name} - ${carInfo}</h3>
-                                <span class="text-sm font-bold px-2 py-1 rounded-full ${order.payment_status === '완납' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">${order.payment_status}</span>
-                            </div>
-                            <p class="text-sm text-slate-600 mt-1">입고: ${inDate} | 출고: ${outDate}</p>
-                            <div class="mt-3 text-slate-700 text-sm">${servicesText}</div>
-                            <div class="mt-3 pt-3 border-t text-right">
-                                <p class="text-slate-500 text-sm">총액: ${order.total_amount.toLocaleString()}원 | 할인: ${order.discount_amount.toLocaleString()}원</p>
-                                <p class="font-bold text-lg text-blue-600">최종액: ${order.final_amount.toLocaleString()}원</p>
-                            </div>
-                        `;
-                        orderElement.addEventListener('click', () => loadWorkOrderForEditing(order));
-                        workOrderList.appendChild(orderElement);
-                    });
-                }
-            } catch (error) {
-                console.error('Error fetching work orders:', error);
-                showNotification(`데이터 로딩 실패: ${error.message}`, 'error');
-                workOrderList.innerHTML = `<div class="text-center bg-red-100 p-6 rounded-lg"><p class="text-red-700">작업 목록을 불러오는 데 실패했습니다.</p></div>`;
-            } finally {
-                listLoader.classList.add('hidden');
-            }
-        }
-
-        function loadWorkOrderForEditing(order) {
-            resetForm();
-            currentEditingOrder = order;
-            editingWorkOrderIdInput.value = order.work_order_id;
-
-            selectedCustomer = order.customers;
-            customerSearchInput.value = order.customers.customer_name;
-            customerIdInput.value = order.customer_id;
-            carSearchInput.value = order.cars.car_plate_number;
-            carIdInput.value = order.car_id;
-            selectedCarModelText.textContent = `차종: ${order.cars.car_model || '미입력'}`;
-
-            if (order.out_date) {
-                const date = new Date(order.out_date);
-                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-                document.getElementById('out_date').value = date.toISOString().slice(0, 16);
-            }
-
-            const servicesByCategory = {};
-            order.work_order_services.forEach(s => {
-                const catId = s.service_items.service_category_id;
-                if (!servicesByCategory[catId]) servicesByCategory[catId] = [];
-                servicesByCategory[catId].push(s);
-            });
-
-            Object.keys(servicesByCategory).forEach(catId => {
-                const chip = document.querySelector(`[data-service-category-id="${catId}"]`);
-                if(chip) chip.click();
-            });
-
-            setTimeout(() => {
-                 Object.values(servicesByCategory).forEach(services => {
-                    const catId = services[0].service_items.service_category_id;
-                    const wrapper = document.getElementById(`service-detail-block-${catId}`)?.querySelector('.service-items-wrapper');
-                    if (!wrapper) return;
-
-                    while (wrapper.firstChild) {
-                        wrapper.removeChild(wrapper.firstChild);
-                    }
-
-                    services.forEach(s => {
-                        addNewServiceItemRow(wrapper, catId);
-                        const lastRow = wrapper.lastChild;
-                        if (lastRow) {
-                             lastRow.querySelector('.service-item-search').value = s.service_items.item_name;
-                             lastRow.querySelector('.service_item_id').value = s.service_item_id;
-                             lastRow.querySelector('.applied_price').value = s.applied_price;
-                        }
-                    });
-                });
-                updateTotalAmount();
-            }, 100);
-
-            totalAmountInput.value = order.total_amount;
-            discountAmountInput.value = order.discount_amount || 0;
-            finalAmountInput.value = order.final_amount;
-            document.getElementById('payment_status').value = order.payment_status;
-            document.getElementById('payment_method').value = order.payment_method;
-
-            createModeContainer.classList.add('hidden');
-            editModeContainer.classList.remove('hidden');
-            newFormButton.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetForm() {
-            form.reset();
-            currentEditingOrder = null;
-            selectedCustomer = null;
-            editingWorkOrderIdInput.value = '';
-            selectedCarModelText.textContent = '';
-            serviceDetailsContainer.innerHTML = '';
-            document.querySelectorAll('#services-chips-container button').forEach(chip => {
-                chip.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
-            });
-            createModeContainer.classList.remove('hidden');
-            editModeContainer.classList.add('hidden');
-            paymentDetails.classList.add('hidden');
-            newFormButton.classList.add('hidden');
-            updateTotalAmount();
-        }
-
-        function setLoading(isLoading) {
-            const currentButton = document.getElementById('editing_work_order_id').value ? document.getElementById('update-button') : saveButton;
-            currentButton.disabled = isLoading;
-
-            const textSpan = currentButton.querySelector('span');
-            const spinner = currentButton.querySelector('svg');
-
-            if (textSpan) textSpan.classList.toggle('hidden', isLoading);
-            if (spinner) spinner.classList.toggle('hidden', !isLoading);
-        }
-
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (saveButton.disabled || document.getElementById('update-button').disabled) return;
-
-            setLoading(true);
-
-            const editingId = editingWorkOrderIdInput.value;
-            const itemRows = document.querySelectorAll('.service-item-row');
-
-            let finalTotalAmount = 0;
-            itemRows.forEach(row => {
-                finalTotalAmount += parseFloat(row.querySelector('.applied_price').value) || 0;
-            });
-
-            const workOrderPayload = {
-                customer_id: customerIdInput.value,
-                car_id: carIdInput.value,
-                out_date: document.getElementById('out_date').value || null,
-                total_amount: finalTotalAmount,
-                discount_amount: discountAmountInput.value || 0,
-                final_amount: (finalTotalAmount - (parseFloat(discountAmountInput.value) || 0)),
-                payment_status: document.getElementById('payment_status').value,
-                payment_method: document.getElementById('payment_method').value,
-            };
-
-            try {
-                 const servicesPayload = Array.from(itemRows).map(row => {
-                    return {
-                        service_item_id: row.querySelector('.service_item_id').value,
-                        applied_price: row.querySelector('.applied_price').value
-                    };
-                }).filter(s => s.service_item_id);
-
-                if (editingId) {
-                    const { error: updateError } = await supabaseClient.from('work_orders').update(workOrderPayload).eq('work_order_id', editingId);
-                    if (updateError) throw updateError;
-
-                    const { error: deleteError } = await supabaseClient.from('work_order_services').delete().eq('work_order_id', editingId);
-                    if (deleteError) throw deleteError;
-
-                    if (servicesPayload.length > 0) {
-                        const payloadWithWorkOrderId = servicesPayload.map(s => ({...s, work_order_id: editingId}));
-                        const { error: insertError } = await supabaseClient.from('work_order_services').insert(payloadWithWorkOrderId);
-                        if (insertError) throw insertError;
-                    }
-                    showNotification('작업이 성공적으로 수정되었습니다!', 'success');
-                } else {
-                    workOrderPayload.in_date = new Date().toISOString();
-                    const { data: newWorkOrder, error: workOrderError } = await supabaseClient.from('work_orders').insert(workOrderPayload).select().single();
-                    if (workOrderError) throw workOrderError;
-
-                    if (servicesPayload.length > 0) {
-                         const payloadWithWorkOrderId = servicesPayload.map(s => ({...s, work_order_id: newWorkOrder.work_order_id}));
-                        const { error: servicesError } = await supabaseClient.from('work_order_services').insert(payloadWithWorkOrderId);
-                        if (servicesError) throw servicesError;
-                    }
-                    showNotification('작업지시서가 성공적으로 등록되었습니다!', 'success');
-                }
-
-                resetForm();
-                await fetchWorkOrders();
-
-            } catch (error) {
-                console.error('Error saving work order:', error);
-                showNotification(`저장 실패: ${error.message}`, 'error');
-            } finally {
-                setLoading(false);
-            }
-        });
-
-        newFormButton.addEventListener('click', resetForm);
-        paymentButton.addEventListener('click', () => {
-            paymentDetails.classList.toggle('hidden');
-        });
-
-        function showNotification(message, type = 'success') {
-             notificationMessage.textContent = message;
-            notification.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-xl transition-all duration-300 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            notification.classList.remove('hidden');
-            setTimeout(() => { notification.classList.add('hidden'); }, 3000);
-        }
-
-        // --- 자동완성 및 모달 UI 로직 ---
-        function setupAutocomplete(input, container, data, displayField, valueField, onSelect) {
-            input.addEventListener('input', () => {
-                const value = input.value.toLowerCase();
-                container.innerHTML = '';
-                if (!value) {
-                    container.classList.add('hidden');
-                    return;
-                }
-                const filtered = data.filter(item => {
-                    const itemValue = (item[displayField] || '').toLowerCase();
-                    return itemValue.includes(value);
-                });
-
-                if (filtered.length > 0) {
-                    filtered.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer text-sm';
-                        div.textContent = item[displayField];
-                        div.addEventListener('click', () => {
-                            input.value = item[displayField];
-                            container.classList.add('hidden');
-                            onSelect(item);
-                        });
-                        container.appendChild(div);
-                    });
-                    container.classList.remove('hidden');
-                } else {
-                    container.classList.add('hidden');
-                }
-            });
-        }
-
-        function setupAllAutocompletes() {
-            // 고객 검색 자동완성
-            setupAutocomplete(customerSearchInput, customerSuggestionsContainer, allCustomers, 'customer_name', 'customer_id', (customer) => {
-                customerIdInput.value = customer.customer_id;
-                selectedCustomer = customer;
-            });
-
-            // 차량 검색 자동완성
-            setupAutocomplete(carSearchInput, carSuggestionsContainer, allCars, 'car_plate_number', 'car_id', (car) => {
-                carIdInput.value = car.car_id;
-                selectedCarModelText.textContent = `차종: ${car.car_model || '미입력'}`;
-            });
-
-            // 신규 고객 모달 - 소속 회사 검색 자동완성
-            setupAutocomplete(affiliatedCompanySearchInput, affiliatedCompanySuggestionsContainer, allAffiliatedCompanies, 'company_name', 'affiliated_company_id', (company) => {
-                affiliatedCompanyIdInput.value = company.affiliated_company_id;
-            });
-
-            // 신규 차량 모달 - 차종 자동완성
-            newCarModelInput.addEventListener('input', () => {
-                const value = newCarModelInput.value.toLowerCase();
-                carModelSuggestionsContainer.innerHTML = '';
-                if (!value) {
-                    carModelSuggestionsContainer.classList.add('hidden');
-                    return;
-                }
-                const filtered = allCarNames.filter(name => name.toLowerCase().includes(value));
-                if(filtered.length > 0) {
-                    filtered.slice(0, 10).forEach(name => {
-                        const div = document.createElement('div');
-                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer text-sm';
-                        div.textContent = name;
-                        div.addEventListener('click', () => {
-                            newCarModelInput.value = name;
-                            carModelSuggestionsContainer.classList.add('hidden');
-                        });
-                        carModelSuggestionsContainer.appendChild(div);
-                    });
-                    carModelSuggestionsContainer.classList.remove('hidden');
-                }
-            });
-        }
-
-        // 고객 구분 선택 시 소속 회사 필드 표시/숨김
-        newGroupTypeSelect.addEventListener('change', (e) => {
-            const selectedValue = e.target.value;
-            if (['회사', '신차카마스터', '중고차카마스터'].includes(selectedValue)) {
-                affiliatedCompanyWrapper.classList.remove('hidden');
-            } else {
-                affiliatedCompanyWrapper.classList.add('hidden');
-                affiliatedCompanySearchInput.value = '';
-                affiliatedCompanyIdInput.value = '';
-            }
-        });
-
-        // 외부 클릭 시 자동완성 창 닫기
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.relative')) {
-                document.querySelectorAll('.absolute').forEach(el => el.classList.add('hidden'));
-            }
-        });
-        
-        // 신규 고객 폼 제출 처리
-        newCustomerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const saveButton = document.getElementById('save-customer-button');
-            saveButton.disabled = true;
-
-            const formData = new FormData(newCustomerForm);
-            const customerData = Object.fromEntries(formData.entries());
-
-            if (!customerData.affiliated_company_id) {
-                customerData.affiliated_company_id = null;
-            }
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('customers')
-                    .insert(customerData)
-                    .select()
-                    .single();
-
-                if (error) throw error;
-                
-                customerSearchInput.value = data.customer_name;
-                customerIdInput.value = data.customer_id;
-                selectedCustomer = data;
-                
-                allCustomers.push(data);
-                
-                customerModal.classList.add('hidden');
-                newCustomerForm.reset();
-                affiliatedCompanyWrapper.classList.add('hidden');
-                
-                showNotification('신규 고객이 등록되고 작업지시서에 자동으로 입력되었습니다.', 'success');
-
-            } catch (error) {
-                console.error('고객 등록 실패:', error);
-                showNotification(`고객 등록 실패: ${error.message}`, 'error');
-            } finally {
-                saveButton.disabled = false;
-            }
-        });
-
-        // 신규 차량 폼 제출 처리
-        newCarForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const saveButton = document.getElementById('save-car-button');
-            saveButton.disabled = true;
-
-            const formData = new FormData(newCarForm);
-            const carData = Object.fromEntries(formData.entries());
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('cars')
-                    .insert(carData)
-                    .select()
-                    .single();
-
-                if (error) throw error;
-                
-                carSearchInput.value = data.car_plate_number;
-                carIdInput.value = data.car_id;
-                selectedCarModelText.textContent = `차종: ${data.car_model || '미입력'}`;
-
-                allCars.push(data);
-                
-                carModal.classList.add('hidden');
-                newCarForm.reset();
-
-                showNotification('신규 차량이 등록되고 작업지시서에 자동으로 입력되었습니다.', 'success');
-
-            } catch (error) {
-                console.error('차량 등록 실패:', error);
-                showNotification(`차량 등록 실패: ${error.message}`, 'error');
-            } finally {
-                saveButton.disabled = false;
-            }
-        });
-
-        // 상세 작업 항목 모달 열기 (이벤트 위임)
-        serviceDetailsContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('create-service-item-button')) {
-                const categoryId = e.target.dataset.categoryId;
-                const categoryName = e.target.dataset.categoryName;
-                
-                serviceItemModalTitle.textContent = `신규 상세 작업 항목 추가 (${categoryName})`;
-                newServiceItemCategoryIdInput.value = categoryId;
-                
-                serviceItemModal.classList.remove('hidden');
-            }
-        });
-
-        // 상세 작업 항목 모달 폼 제출
-        newServiceItemForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const saveBtn = document.getElementById('save-service-item-button');
-            saveBtn.disabled = true;
-
-            const formData = new FormData(newServiceItemForm);
-            const itemData = Object.fromEntries(formData.entries());
-            
-            itemData.price_a = parseFloat(itemData.price_a);
-            itemData.price_b = parseFloat(itemData.price_b);
-            itemData.price_c = parseFloat(itemData.price_c);
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('service_items')
-                    .insert(itemData)
-                    .select()
-                    .single();
-
-                if (error) throw error;
-                
-                allServiceItems.push(data);
-                
-                serviceItemModal.classList.add('hidden');
-                newServiceItemForm.reset();
-                showNotification('새로운 상세 작업 항목이 성공적으로 등록되었습니다.', 'success');
-
-            } catch (error) {
-                console.error('상세 작업 항목 등록 실패:', error);
-                showNotification(`등록 실패: ${error.message}`, 'error');
-            } finally {
-                saveBtn.disabled = false;
-            }
-        });
-        
-        document.addEventListener('DOMContentLoaded', async () => {
-             if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
-                supabaseWarning.classList.remove('hidden');
-                document.querySelector('main').style.opacity = '0.5';
-                document.querySelector('main').style.pointerEvents = 'none';
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!SUPABASE_URL || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+                document.getElementById('supabase-warning').classList.remove('hidden');
                 return;
             }
-
-            const { createClient } = supabase;
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-            await loadFormData();
-            await fetchWorkOrders();
-            
-            setupAllAutocompletes();
-
-            discountAmountInput.addEventListener('input', calculateFinalAmount);
-
-            addCustomerButton.addEventListener('click', () => customerModal.classList.remove('hidden'));
-            cancelCustomerButton.addEventListener('click', () => {
-                customerModal.classList.add('hidden');
-                newCustomerForm.reset();
-                affiliatedCompanyWrapper.classList.add('hidden');
-            });
-
-            addCarButton.addEventListener('click', () => carModal.classList.remove('hidden'));
-            cancelCarButton.addEventListener('click', () => {
-                carModal.classList.add('hidden');
-                newCarForm.reset();
-            });
-            
-            cancelServiceItemButton.addEventListener('click', () => {
-                serviceItemModal.classList.add('hidden');
-                newServiceItemForm.reset();
-            });
-
-            // ✨ [신규] 모달 X 버튼 이벤트 리스너
-            closeCustomerModalButton.addEventListener('click', () => cancelCustomerButton.click());
-            closeCarModalButton.addEventListener('click', () => cancelCarButton.click());
-            closeServiceItemModalButton.addEventListener('click', () => cancelServiceItemButton.click());
+            initPage();
         });
+
+        async function initPage() {
+            await loadCommonComponents();
+            await loadInitialData();
+            initializeWorkOrderForm();
+        }
     </script>
 </body>
 </html>
+
 
