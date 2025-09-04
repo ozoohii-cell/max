@@ -33,6 +33,7 @@
         </div>
 
         <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- 입력 폼 -->
             <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl shadow-lg self-start">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">📝 작업지시서</h2>
@@ -40,6 +41,7 @@
                 </div>
                 <form id="work-order-form" class="space-y-4">
                     <input type="hidden" id="editing_work_order_id">
+                    <!-- 고객 및 차량 정보 -->
                     <fieldset class="border p-4 rounded-lg">
                         <legend class="text-lg font-semibold px-2">고객/차량 정보</legend>
                         <div class="space-y-4">
@@ -78,9 +80,11 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">작업 항목</label>
                                 <div id="services-chips-container" class="flex flex-wrap gap-2 p-2 border rounded-lg bg-slate-50">
-                                    </div>
+                                    <!-- 작업 항목 칩 -->
+                                </div>
                                 <div id="service-details-container" class="mt-4 space-y-4">
-                                    </div>
+                                    <!-- 선택된 작업의 상세 입력 필드 -->
+                                </div>
                             </div>
                         </div>
                     </fieldset>
@@ -141,6 +145,7 @@
                     </div>
                 </form>
             </div>
+            <!-- 작업 목록 -->
             <div class="lg:col-span-3">
                 <h2 class="text-2xl font-bold mb-6">📋 작업지시서 목록</h2>
                 <div id="list-loader" class="text-center py-10">
@@ -151,8 +156,14 @@
         </main>
     </div>
 
+    <!-- 고객 등록 모달 -->
     <div id="customer-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+            <button type="button" id="close-customer-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             <h2 class="text-2xl font-bold mb-6">👤 신규 고객 등록</h2>
             <form id="new-customer-form" class="space-y-4">
                  <div>
@@ -189,8 +200,14 @@
         </div>
     </div>
 
+    <!-- 차량 등록 모달 -->
     <div id="car-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+            <button type="button" id="close-car-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             <h2 class="text-2xl font-bold mb-6">🚗 신규 차량 등록</h2>
             <form id="new-car-form" class="space-y-4">
                 <div>
@@ -215,7 +232,45 @@
             </form>
         </div>
     </div>
+    
+    <!-- 상세 작업 항목 추가 모달 -->
+    <div id="service-item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
+            <button type="button" id="close-service-item-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 id="service-item-modal-title" class="text-2xl font-bold mb-6">신규 상세 작업 항목 추가</h2>
+            <form id="new-service-item-form" class="space-y-4">
+                <input type="hidden" id="new_item_category_id" name="service_category_id">
+                <div>
+                    <label for="new_item_name" class="block text-sm font-medium text-slate-700 mb-1">항목명 <span class="text-red-500">*</span></label>
+                    <input type="text" id="new_item_name" name="item_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="new_price_a" class="block text-sm font-medium text-slate-700 mb-1">가격 A (개인)</label>
+                        <input type="number" id="new_price_a" name="price_a" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                    </div>
+                    <div>
+                        <label for="new_price_b" class="block text-sm font-medium text-slate-700 mb-1">가격 B (회사)</label>
+                        <input type="number" id="new_price_b" name="price_b" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                    </div>
+                    <div>
+                        <label for="new_price_c" class="block text-sm font-medium text-slate-700 mb-1">가격 C (카마스터)</label>
+                        <input type="number" id="new_price_c" name="price_c" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="cancel-service-item-button" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
+                    <button type="submit" id="save-service-item-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- 상세 작업 항목 템플릿 -->
     <template id="service-item-template">
         <div class="service-item-row p-3 bg-slate-50 border rounded-lg space-y-2">
             <div class="grid grid-cols-10 gap-2 items-center">
@@ -288,8 +343,19 @@
         const affiliatedCompanyIdInput = document.getElementById('affiliated_company_id');
         const newCarModelInput = document.getElementById('new_car_model');
         const carModelSuggestionsContainer = document.getElementById('car-model-suggestions');
+        
+        // 상세 작업 항목 모달 관련 변수
+        const serviceItemModal = document.getElementById('service-item-modal');
+        const newServiceItemForm = document.getElementById('new-service-item-form');
+        const serviceItemModalTitle = document.getElementById('service-item-modal-title');
+        const newServiceItemCategoryIdInput = document.getElementById('new_item_category_id');
+        const cancelServiceItemButton = document.getElementById('cancel-service-item-button');
+        
+        // ✨ [신규] 모달 닫기 버튼
+        const closeCustomerModalButton = document.getElementById('close-customer-modal');
+        const closeCarModalButton = document.getElementById('close-car-modal');
+        const closeServiceItemModalButton = document.getElementById('close-service-item-modal');
 
-        // ... (이후 함수들)
 
         function populateServiceChips(data) {
             const container = document.getElementById('services-chips-container');
@@ -312,7 +378,10 @@
                         block.innerHTML = `
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="font-bold">${item.service_name}</h4>
-                                <button type="button" class="add-service-item-button text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200" data-category-id="${item.service_category_id}">+ 항목 추가</button>
+                                <div class="flex gap-2">
+                                    <button type="button" class="create-service-item-button text-sm bg-green-100 text-green-700 px-2 py-1 rounded-md hover:bg-green-200" data-category-id="${item.service_category_id}" data-category-name="${item.service_name}">상세항목추가</button>
+                                    <button type="button" class="add-service-item-button text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200" data-category-id="${item.service_category_id}">+ 항목 추가</button>
+                                </div>
                             </div>
                             <div class="service-items-wrapper space-y-2"></div>
                         `;
@@ -338,10 +407,10 @@
             const idInput = row.querySelector('.service_item_id');
             const priceInput = row.querySelector('.applied_price');
             const suggestionsContainer = row.querySelector('.service-item-suggestions');
-            const categoryItems = allServiceItems.filter(i => i.service_category_id == categoryId);
-
+            
             searchInput.addEventListener('input', () => {
                 const value = searchInput.value.toLowerCase();
+                const categoryItems = allServiceItems.filter(i => i.service_category_id == categoryId);
                 suggestionsContainer.innerHTML = '';
                 if (!value) { suggestionsContainer.classList.add('hidden'); return; }
                 const filtered = categoryItems.filter(i => i.item_name.toLowerCase().includes(value));
@@ -352,7 +421,7 @@
                         div.textContent = item.item_name;
                         div.addEventListener('click', () => {
                             searchInput.value = item.item_name;
-                            idInput.value = item.service_item_id;
+                            idInput.value = item.item_id;
                             if (selectedCustomer) {
                                 const group = selectedCustomer.group_type;
                                 let price = item.price_a;
@@ -748,10 +817,6 @@
             }
         });
         
-        // ==================================================================
-        // ✨ [수정됨] 신규 고객/차량 등록 후 자동 입력 로직
-        // ==================================================================
-        
         // 신규 고객 폼 제출 처리
         newCustomerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -761,7 +826,6 @@
             const formData = new FormData(newCustomerForm);
             const customerData = Object.fromEntries(formData.entries());
 
-            // affiliated_company_id가 비어있으면 null로 설정
             if (!customerData.affiliated_company_id) {
                 customerData.affiliated_company_id = null;
             }
@@ -775,18 +839,15 @@
 
                 if (error) throw error;
                 
-                // 1. 메인 폼에 자동 입력
                 customerSearchInput.value = data.customer_name;
                 customerIdInput.value = data.customer_id;
                 selectedCustomer = data;
                 
-                // 2. 내부 데이터 업데이트
                 allCustomers.push(data);
                 
-                // 3. 모달 닫기 및 초기화
                 customerModal.classList.add('hidden');
                 newCustomerForm.reset();
-                affiliatedCompanyWrapper.classList.add('hidden'); // 소속회사 필드도 숨김
+                affiliatedCompanyWrapper.classList.add('hidden');
                 
                 showNotification('신규 고객이 등록되고 작업지시서에 자동으로 입력되었습니다.', 'success');
 
@@ -816,15 +877,12 @@
 
                 if (error) throw error;
                 
-                // 1. 메인 폼에 자동 입력
                 carSearchInput.value = data.car_plate_number;
                 carIdInput.value = data.car_id;
                 selectedCarModelText.textContent = `차종: ${data.car_model || '미입력'}`;
 
-                // 2. 내부 데이터 업데이트
                 allCars.push(data);
                 
-                // 3. 모달 닫기 및 초기화
                 carModal.classList.add('hidden');
                 newCarForm.reset();
 
@@ -838,6 +896,55 @@
             }
         });
 
+        // 상세 작업 항목 모달 열기 (이벤트 위임)
+        serviceDetailsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('create-service-item-button')) {
+                const categoryId = e.target.dataset.categoryId;
+                const categoryName = e.target.dataset.categoryName;
+                
+                serviceItemModalTitle.textContent = `신규 상세 작업 항목 추가 (${categoryName})`;
+                newServiceItemCategoryIdInput.value = categoryId;
+                
+                serviceItemModal.classList.remove('hidden');
+            }
+        });
+
+        // 상세 작업 항목 모달 폼 제출
+        newServiceItemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('save-service-item-button');
+            saveBtn.disabled = true;
+
+            const formData = new FormData(newServiceItemForm);
+            const itemData = Object.fromEntries(formData.entries());
+            
+            itemData.price_a = parseFloat(itemData.price_a);
+            itemData.price_b = parseFloat(itemData.price_b);
+            itemData.price_c = parseFloat(itemData.price_c);
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('service_items')
+                    .insert(itemData)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                
+                allServiceItems.push(data);
+                
+                serviceItemModal.classList.add('hidden');
+                newServiceItemForm.reset();
+                showNotification('새로운 상세 작업 항목이 성공적으로 등록되었습니다.', 'success');
+
+            } catch (error) {
+                console.error('상세 작업 항목 등록 실패:', error);
+                showNotification(`등록 실패: ${error.message}`, 'error');
+            } finally {
+                saveBtn.disabled = false;
+            }
+        });
+        
         document.addEventListener('DOMContentLoaded', async () => {
              if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
                 supabaseWarning.classList.remove('hidden');
@@ -868,7 +975,18 @@
                 carModal.classList.add('hidden');
                 newCarForm.reset();
             });
+            
+            cancelServiceItemButton.addEventListener('click', () => {
+                serviceItemModal.classList.add('hidden');
+                newServiceItemForm.reset();
+            });
+
+            // ✨ [신규] 모달 X 버튼 이벤트 리스너
+            closeCustomerModalButton.addEventListener('click', () => cancelCustomerButton.click());
+            closeCarModalButton.addEventListener('click', () => cancelCarButton.click());
+            closeServiceItemModalButton.addEventListener('click', () => cancelServiceItemButton.click());
         });
     </script>
 </body>
 </html>
+
