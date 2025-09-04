@@ -1,38 +1,9 @@
-
+<!-- Customer Modal -->
 <div id="customer-modal" class="modal-template hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
     <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6">👤 신규 고객 등록</h2>
         <form id="new-customer-form" class="space-y-4">
-            <div>
-                <label for="new_customer_name" class="block text-sm font-medium text-slate-700 mb-1">고객명 <span class="text-red-500">*</span></label>
-                <input type="text" id="new_customer_name" name="customer_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-            </div>
-            <div>
-                <label for="new_phone_number" class="block text-sm font-medium text-slate-700 mb-1">연락처</label>
-                <input type="text" id="new_phone_number" name="phone_number" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-            </div>
-            <div>
-                <label for="new_group_type" class="block text-sm font-medium text-slate-700 mb-1">고객 구분</label>
-                <select id="new_group_type" name="group_type" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                    <option value="">-- 선택 안함 --</option>
-                    <option value="개인">개인</option>
-                    <option value="회사">회사</option>
-                    <option value="신차카마스터">신차카마스터</option>
-                    <option value="중고차카마스터">중고차카마스터</option>
-                </select>
-            </div>
-            <div id="affiliated-company-wrapper" class="hidden space-y-2">
-                <label for="affiliated-company-search" class="block text-sm font-medium text-slate-700">소속 회사 검색</label>
-                <div class="relative">
-                    <input type="text" id="affiliated-company-search" autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="소속 회사 이름으로 검색...">
-                    <input type="hidden" id="affiliated_company_id" name="affiliated_company_id">
-                    <div id="affiliated-company-suggestions" class="hidden absolute z-30 w-full bg-white border border-slate-300 rounded-lg mt-1 max-h-40 overflow-y-auto"></div>
-                </div>
-            </div>
-            <div class="flex justify-end gap-4 pt-4">
-                <button type="button" class="cancel-button px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
-                <button type="submit" id="save-customer-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
-            </div>
+            <!-- Form content -->
         </form>
     </div>
 </div>
@@ -42,28 +13,35 @@
      <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6">🚗 신규 차량 등록</h2>
         <form id="new-car-form" class="space-y-4">
+            <!-- Form content -->
+        </form>
+    </div>
+</div>
+
+<!-- Announcement Modal -->
+<div id="announcement-modal" class="modal-template hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+        <button type="button" onclick="hideModal('announcement-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <h2 class="text-2xl font-bold mb-6">📢 신규 공지사항 등록</h2>
+        <form id="new-announcement-form" class="space-y-4">
             <div>
-                <label for="new_car_plate_number" class="block text-sm font-medium text-slate-700 mb-1">차량번호 <span class="text-red-500">*</span></label>
-                <input type="text" id="new_car_plate_number" name="car_plate_number" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
-            </div>
-            <div>
-                <label for="new_car_model" class="block text-sm font-medium text-slate-700 mb-1">차종</label>
-                <div class="relative">
-                    <input type="text" id="new_car_model" name="car_model" autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="차종 검색...">
-                    <div id="car-model-suggestions" class="hidden absolute z-30 w-full bg-white border border-slate-300 rounded-lg mt-1 max-h-40 overflow-y-auto"></div>
-                </div>
-            </div>
-            <div>
-                <label for="new_chassis_number" class="block text-sm font-medium text-slate-700 mb-1">차대번호</label>
-                <input type="text" id="new_chassis_number" name="chassis_number" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                <label for="new_announcement_content" class="block text-sm font-medium text-slate-700 mb-1">내용</label>
+                <textarea id="new_announcement_content" name="content" rows="4" required class="w-full px-4 py-2 border border-slate-300 rounded-lg"></textarea>
             </div>
             <div class="flex justify-end gap-4 pt-4">
-                <button type="button" class="cancel-button px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
-                <button type="submit" id="save-car-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
+                <button type="button" onclick="hideModal('announcement-modal')" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Supplier, Item, Notification, and Template HTML follow... -->
 
+<!-- Notification Placeholder -->
+<div id="notification" class="hidden">
+    <p id="notification-message"></p>
+</div>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맥스콘 - 메인 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-bold text-slate-900">맥스콘 대시보드</h1>
+            <p class="text-slate-600 mt-3">모든 업무 현황을 한눈에 확인하세요.</p>
+        </header>
+
+        <div id="supabase-warning" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6" role="alert">
+            <p class="font-bold">중요!</p>
+            <p>app.js 파일에서 Supabase URL과 Key를 입력해야 앱이 정상적으로 작동합니다.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">📢 공지사항</h2>
+                    <button id="add-announcement-button" class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-md hover:bg-blue-200">글쓰기</button>
+                </div>
+                <ul id="announcements-list" class="space-y-2 text-slate-700 custom-scrollbar max-h-32 overflow-y-auto">
+                    <!-- 공지사항이 여기에 동적으로 추가됩니다 -->
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                <h2 class="text-xl font-bold mb-4">📋 오늘의 할 일</h2>
+                <ul id="todos-list" class="space-y-2 text-slate-700 flex-grow custom-scrollbar max-h-32 overflow-y-auto">
+                    <!-- 할 일이 여기에 동적으로 추가됩니다 -->
+                </ul>
+                <form id="new-todo-form" class="mt-4 flex gap-2">
+                    <input type="text" id="new-todo-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="새로운 할 일..." required>
+                    <button type="submit" class="bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition">+</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <button onclick="window.location.href='work-order-form.html'" class="dashboard-card bg-blue-500 text-white p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="mt-2 font-semibold">작업지시서 관리</span>
+            </button>
+            <button onclick="window.location.href='stock-input.html'" class="dashboard-card bg-green-500 text-white p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <span class="mt-2 font-semibold">재고 입력</span>
+            </button>
+             <button onclick="alert('준비중인 기능입니다.')" class="dashboard-card bg-teal-500 text-white p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span class="mt-2 font-semibold">작업 조회</span>
+            </button>
+            <button onclick="alert('준비중인 기능입니다.')" class="dashboard-card bg-purple-500 text-white p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1V21c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h7.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path><path d="M15 2v5h5"></path><path d="M10 16s.8-1 2-1 2 1 2 1"></path><path d="M10 12h4"></path></svg>
+                <span class="mt-2 font-semibold">상담 기록</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold mb-4">🕒 대기 차량</h2>
+                <div id="waiting-cars-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar"></div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold mb-4">🛠️ 작업중 차량</h2>
+                <div id="in-progress-cars-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar"></div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                <button onclick="alert('준비중인 기능입니다.')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-2 px-4 rounded-lg transition">재고 요청</button>
+                <button onclick="alert('준비중인 기능입니다.')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-2 px-4 rounded-lg transition">재고 조회</button>
+                <button onclick="alert('준비중인 기능입니다.')" class="bg-indigo-200 hover:bg-indigo-300 text-indigo-800 font-medium py-2 px-4 rounded-lg transition">고객 조회</button>
+                <button onclick="alert('준비중인 기능입니다.')" class="bg-indigo-200 hover:bg-indigo-300 text-indigo-800 font-medium py-2 px-4 rounded-lg transition">회사 조회</button>
+                <button onclick="alert('준비중인 기능입니다.')" class="bg-green-200 hover:bg-green-300 text-green-800 font-medium py-2 px-4 rounded-lg transition">지난 작업 조회</button>
+                <button onclick="alert('준비중인 기능입니다.')" class="bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-medium py-2 px-4 rounded-lg transition">작업팁</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal-container"></div>
+    <div id="notification-container"></div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!SUPABASE_URL || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+                document.getElementById('supabase-warning').classList.remove('hidden');
+                return;
+            }
+            initPage();
+        });
+
+        async function initPage() {
+            await loadCommonComponents();
+            initializeDashboard();
+        }
+    </script>
+</body>
+</html>
