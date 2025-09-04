@@ -73,6 +73,41 @@
     </div>
 </div>
 
+<!-- Service Item Modal -->
+<div id="service-item-modal" class="modal-template hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
+        <button type="button" class="cancel-button absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        <h2 id="service-item-modal-title" class="text-2xl font-bold mb-6">신규 상세 작업 항목 추가</h2>
+        <form id="new-service-item-form" class="space-y-4">
+            <input type="hidden" id="new_item_category_id" name="service_category_id">
+            <div>
+                <label for="new_item_name" class="block text-sm font-medium text-slate-700 mb-1">항목명 <span class="text-red-500">*</span></label>
+                <input type="text" id="new_item_name" name="item_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="new_price_a" class="block text-sm font-medium text-slate-700 mb-1">가격 A (개인)</label>
+                    <input type="number" id="new_price_a" name="price_a" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                </div>
+                <div>
+                    <label for="new_price_b" class="block text-sm font-medium text-slate-700 mb-1">가격 B (회사)</label>
+                    <input type="number" id="new_price_b" name="price_b" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                </div>
+                <div>
+                    <label for="new_price_c" class="block text-sm font-medium text-slate-700 mb-1">가격 C (카마스터)</label>
+                    <input type="number" id="new_price_c" name="price_c" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 pt-4">
+                <button type="button" class="cancel-button px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition"><span>저장</span><svg class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Announcement Modal -->
 <div id="announcement-modal" class="modal-template hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
     <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
@@ -118,3 +153,4 @@
 <div id="notification" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl transition-transform transform">
     <p id="notification-message"></p>
 </div>
+

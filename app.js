@@ -393,6 +393,7 @@ async function initializeWorkOrderForm() {
                         <div class="flex justify-between items-center mb-2">
                             <h4 class="font-bold">${item.service_name}</h4>
                             <div class="flex gap-2">
+                                <button type="button" class="create-service-item-button text-sm bg-green-100 text-green-700 px-2 py-1 rounded-md hover:bg-green-200" data-category-id="${item.service_category_id}" data-category-name="${item.service_name}">상세항목추가</button>
                                 <button type="button" class="add-service-item-button text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200" data-category-id="${item.service_category_id}">+ 항목추가</button>
                             </div>
                         </div>
@@ -402,6 +403,13 @@ async function initializeWorkOrderForm() {
                     addNewServiceItemRow(block.querySelector('.service-items-wrapper'), item.service_category_id);
                     block.querySelector('.add-service-item-button').addEventListener('click', (e) => {
                         addNewServiceItemRow(block.querySelector('.service-items-wrapper'), e.target.dataset.categoryId);
+                    });
+                     block.querySelector('.create-service-item-button').addEventListener('click', (e) => {
+                        const categoryId = e.target.dataset.categoryId;
+                        const categoryName = e.target.dataset.categoryName;
+                        document.getElementById('service-item-modal-title').textContent = `신규 상세 작업 항목 추가 (${categoryName})`;
+                        document.getElementById('new_item_category_id').value = categoryId;
+                        showModal('service-item-modal');
                     });
                 } else {
                     document.getElementById(detailId)?.remove();
@@ -417,12 +425,52 @@ async function initializeWorkOrderForm() {
         if(!templateNode) return;
         const templateContent = templateNode.content.cloneNode(true);
         const row = templateContent.querySelector('.service-item-row');
-        // ... (rest of the function is implemented below)
+        const searchInput = row.querySelector('.service-item-search');
+        const idInput = row.querySelector('.service_item_id');
+        const priceInput = row.querySelector('.applied_price');
+        const suggestionsContainer = row.querySelector('.service-item-suggestions');
+
+        searchInput.addEventListener('input', () => {
+             const value = searchInput.value.toLowerCase();
+             const categoryItems = allData.serviceItems.filter(i => i.service_category_id == categoryId);
+             suggestionsContainer.innerHTML = '';
+             if (!value) { suggestionsContainer.classList.add('hidden'); return; }
+             const filtered = categoryItems.filter(i => i.item_name.toLowerCase().includes(value));
+             if (filtered.length > 0) {
+                 filtered.forEach(item => {
+                     const div = document.createElement('div');
+                     div.className = 'p-2 hover:bg-slate-100 cursor-pointer';
+                     div.textContent = item.item_name;
+                     div.addEventListener('click', () => {
+                         searchInput.value = item.item_name;
+                         idInput.value = item.item_id;
+                         if (selectedCustomer) {
+                             const group = selectedCustomer.group_type;
+                             let price = item.price_a;
+                             if (group === '회사') price = item.price_b;
+                             if (group === '신차카마스터' || group === '중고차카마스터') price = item.price_c;
+                             priceInput.value = price;
+                         } else {
+                             priceInput.value = item.price_a;
+                         }
+                         suggestionsContainer.classList.add('hidden');
+                         updateTotalAmount();
+                     });
+                     suggestionsContainer.appendChild(div);
+                 });
+                 suggestionsContainer.classList.remove('hidden');
+             }
+        });
+
+        priceInput.addEventListener('input', updateTotalAmount);
+        row.querySelector('.remove-service-item-button').addEventListener('click', () => {
+            row.remove();
+            updateTotalAmount();
+        });
+
         wrapper.appendChild(row);
     }
     
-    // ... (rest of the functions need to be here)
-
     // Initial setup
     populateServiceChips(allData.serviceCategories);
     setupAllAutocompletes();
@@ -518,6 +566,27 @@ function setupModalEventListeners() {
         }
     });
     
+    // Service Item Modal
+    document.getElementById('new-service-item-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const button = e.target.querySelector('button[type="submit"]');
+        setLoading(button, true);
+
+        const formData = new FormData(e.target);
+        const itemData = Object.fromEntries(formData.entries());
+
+        const { data, error } = await supabaseClient.from('service_items').insert(itemData).select().single();
+
+        setLoading(button, false);
+        if(error) {
+            showNotification(`상세항목 등록 실패: ${error.message}`, 'error');
+        } else {
+            showNotification('신규 상세항목이 등록되었습니다.');
+            hideModal('service-item-modal');
+            allData.serviceItems.push(data);
+        }
+    });
+
     // Customer Modal - Group Type Change
     document.getElementById('new_group_type')?.addEventListener('change', (e) => {
         const affiliatedWrapper = document.getElementById('affiliated-company-wrapper');
@@ -582,3 +651,4 @@ function setupModalEventListeners() {
         });
     });
 }
+
