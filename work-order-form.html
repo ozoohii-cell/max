@@ -513,14 +513,13 @@
                     const wrapper = document.getElementById(`service-detail-block-${catId}`)?.querySelector('.service-items-wrapper');
                     if (!wrapper) return;
 
-                    // 기존에 있던 빈 행을 제거
                     while (wrapper.firstChild) {
                         wrapper.removeChild(wrapper.firstChild);
                     }
 
                     services.forEach(s => {
-                        addNewServiceItemRow(wrapper, catId); // 새 행 추가
-                        const lastRow = wrapper.lastChild; // 마지막에 추가된 행을 가져옴
+                        addNewServiceItemRow(wrapper, catId);
+                        const lastRow = wrapper.lastChild;
                         if (lastRow) {
                              lastRow.querySelector('.service-item-search').value = s.service_items.item_name;
                              lastRow.querySelector('.service_item_id').value = s.service_item_id;
@@ -653,7 +652,7 @@
             notification.classList.remove('hidden');
             setTimeout(() => { notification.classList.add('hidden'); }, 3000);
         }
-        
+
         // --- 자동완성 및 모달 UI 로직 ---
         function setupAutocomplete(input, container, data, displayField, valueField, onSelect) {
             input.addEventListener('input', () => {
@@ -686,7 +685,7 @@
                 }
             });
         }
-        
+
         function setupAllAutocompletes() {
             // 고객 검색 자동완성
             setupAutocomplete(customerSearchInput, customerSuggestionsContainer, allCustomers, 'customer_name', 'customer_id', (customer) => {
@@ -699,12 +698,12 @@
                 carIdInput.value = car.car_id;
                 selectedCarModelText.textContent = `차종: ${car.car_model || '미입력'}`;
             });
-            
+
             // 신규 고객 모달 - 소속 회사 검색 자동완성
             setupAutocomplete(affiliatedCompanySearchInput, affiliatedCompanySuggestionsContainer, allAffiliatedCompanies, 'company_name', 'affiliated_company_id', (company) => {
                 affiliatedCompanyIdInput.value = company.affiliated_company_id;
             });
-            
+
             // 신규 차량 모달 - 차종 자동완성
             newCarModelInput.addEventListener('input', () => {
                 const value = newCarModelInput.value.toLowerCase();
@@ -715,7 +714,7 @@
                 }
                 const filtered = allCarNames.filter(name => name.toLowerCase().includes(value));
                 if(filtered.length > 0) {
-                    filtered.slice(0, 10).forEach(name => { // 너무 많으면 잘라냄
+                    filtered.slice(0, 10).forEach(name => {
                         const div = document.createElement('div');
                         div.className = 'p-2 hover:bg-slate-100 cursor-pointer text-sm';
                         div.textContent = name;
@@ -729,7 +728,7 @@
                 }
             });
         }
-        
+
         // 고객 구분 선택 시 소속 회사 필드 표시/숨김
         newGroupTypeSelect.addEventListener('change', (e) => {
             const selectedValue = e.target.value;
@@ -741,11 +740,101 @@
                 affiliatedCompanyIdInput.value = '';
             }
         });
-        
+
         // 외부 클릭 시 자동완성 창 닫기
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.relative')) {
                 document.querySelectorAll('.absolute').forEach(el => el.classList.add('hidden'));
+            }
+        });
+        
+        // ==================================================================
+        // ✨ [수정됨] 신규 고객/차량 등록 후 자동 입력 로직
+        // ==================================================================
+        
+        // 신규 고객 폼 제출 처리
+        newCustomerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveButton = document.getElementById('save-customer-button');
+            saveButton.disabled = true;
+
+            const formData = new FormData(newCustomerForm);
+            const customerData = Object.fromEntries(formData.entries());
+
+            // affiliated_company_id가 비어있으면 null로 설정
+            if (!customerData.affiliated_company_id) {
+                customerData.affiliated_company_id = null;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('customers')
+                    .insert(customerData)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                
+                // 1. 메인 폼에 자동 입력
+                customerSearchInput.value = data.customer_name;
+                customerIdInput.value = data.customer_id;
+                selectedCustomer = data;
+                
+                // 2. 내부 데이터 업데이트
+                allCustomers.push(data);
+                
+                // 3. 모달 닫기 및 초기화
+                customerModal.classList.add('hidden');
+                newCustomerForm.reset();
+                affiliatedCompanyWrapper.classList.add('hidden'); // 소속회사 필드도 숨김
+                
+                showNotification('신규 고객이 등록되고 작업지시서에 자동으로 입력되었습니다.', 'success');
+
+            } catch (error) {
+                console.error('고객 등록 실패:', error);
+                showNotification(`고객 등록 실패: ${error.message}`, 'error');
+            } finally {
+                saveButton.disabled = false;
+            }
+        });
+
+        // 신규 차량 폼 제출 처리
+        newCarForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveButton = document.getElementById('save-car-button');
+            saveButton.disabled = true;
+
+            const formData = new FormData(newCarForm);
+            const carData = Object.fromEntries(formData.entries());
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('cars')
+                    .insert(carData)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                
+                // 1. 메인 폼에 자동 입력
+                carSearchInput.value = data.car_plate_number;
+                carIdInput.value = data.car_id;
+                selectedCarModelText.textContent = `차종: ${data.car_model || '미입력'}`;
+
+                // 2. 내부 데이터 업데이트
+                allCars.push(data);
+                
+                // 3. 모달 닫기 및 초기화
+                carModal.classList.add('hidden');
+                newCarForm.reset();
+
+                showNotification('신규 차량이 등록되고 작업지시서에 자동으로 입력되었습니다.', 'success');
+
+            } catch (error) {
+                console.error('차량 등록 실패:', error);
+                showNotification(`차량 등록 실패: ${error.message}`, 'error');
+            } finally {
+                saveButton.disabled = false;
             }
         });
 
@@ -768,10 +857,17 @@
             discountAmountInput.addEventListener('input', calculateFinalAmount);
 
             addCustomerButton.addEventListener('click', () => customerModal.classList.remove('hidden'));
-            cancelCustomerButton.addEventListener('click', () => customerModal.classList.add('hidden'));
+            cancelCustomerButton.addEventListener('click', () => {
+                customerModal.classList.add('hidden');
+                newCustomerForm.reset();
+                affiliatedCompanyWrapper.classList.add('hidden');
+            });
 
             addCarButton.addEventListener('click', () => carModal.classList.remove('hidden'));
-            cancelCarButton.addEventListener('click', () => carModal.classList.add('hidden'));
+            cancelCarButton.addEventListener('click', () => {
+                carModal.classList.add('hidden');
+                newCarForm.reset();
+            });
         });
     </script>
 </body>
