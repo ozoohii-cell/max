@@ -26,14 +26,13 @@
             <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">맥스콘</h1>
             <p class="text-slate-600 mt-2">모든 작업 내역을 웹에서 체계적으로 관리하세요.</p>
         </header>
-        
+
         <div id="supabase-warning" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6" role="alert">
             <p class="font-bold">중요!</p>
             <p>Supabase URL과 Key를 입력해야 앱이 정상적으로 작동합니다.</p>
         </div>
 
         <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <!-- 입력 폼 -->
             <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl shadow-lg self-start">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">📝 작업지시서</h2>
@@ -41,7 +40,6 @@
                 </div>
                 <form id="work-order-form" class="space-y-4">
                     <input type="hidden" id="editing_work_order_id">
-                    <!-- 고객 및 차량 정보 -->
                     <fieldset class="border p-4 rounded-lg">
                         <legend class="text-lg font-semibold px-2">고객/차량 정보</legend>
                         <div class="space-y-4">
@@ -80,11 +78,9 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">작업 항목</label>
                                 <div id="services-chips-container" class="flex flex-wrap gap-2 p-2 border rounded-lg bg-slate-50">
-                                    <!-- 작업 항목 칩 -->
-                                </div>
+                                    </div>
                                 <div id="service-details-container" class="mt-4 space-y-4">
-                                    <!-- 선택된 작업의 상세 입력 필드 -->
-                                </div>
+                                    </div>
                             </div>
                         </div>
                     </fieldset>
@@ -126,7 +122,7 @@
                             </div>
                         </div>
                     </fieldset>
-                    
+
                     <div id="form-actions">
                         <div id="create-mode-container">
                             <button type="submit" id="save-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all flex items-center justify-center">
@@ -145,7 +141,6 @@
                     </div>
                 </form>
             </div>
-            <!-- 작업 목록 -->
             <div class="lg:col-span-3">
                 <h2 class="text-2xl font-bold mb-6">📋 작업지시서 목록</h2>
                 <div id="list-loader" class="text-center py-10">
@@ -156,7 +151,6 @@
         </main>
     </div>
 
-    <!-- 고객 등록 모달 -->
     <div id="customer-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">👤 신규 고객 등록</h2>
@@ -194,8 +188,7 @@
             </form>
         </div>
     </div>
-    
-    <!-- 차량 등록 모달 -->
+
     <div id="car-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">🚗 신규 차량 등록</h2>
@@ -223,7 +216,6 @@
         </div>
     </div>
 
-    <!-- 상세 작업 항목 템플릿 -->
     <template id="service-item-template">
         <div class="service-item-row p-3 bg-slate-50 border rounded-lg space-y-2">
             <div class="grid grid-cols-10 gap-2 items-center">
@@ -246,13 +238,13 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://aeleuwbpvtpmgnomftlh.supabase.co'; 
+        const SUPABASE_URL = 'https://aeleuwbpvtpmgnomftlh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbGV1d2JwdnRwbWdub21mdGxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2OTEzNjgsImV4cCI6MjA3MjI2NzM2OH0.0ov52DVEOrYn7TbcP0Zu-206ZnrHPo5CbWsHm3QXHvo';
         let supabaseClient;
         let allCustomers = [], allCars = [], allServiceCategories = [], allServiceItems = [], allAffiliatedCompanies = [], allCarNames = [];
         let selectedCustomer = null;
         let currentEditingOrder = null;
-        
+
         const supabaseWarning = document.getElementById('supabase-warning');
         const form = document.getElementById('work-order-form');
         const workOrderList = document.getElementById('work-order-list');
@@ -293,11 +285,12 @@
         const affiliatedCompanyWrapper = document.getElementById('affiliated-company-wrapper');
         const affiliatedCompanySearchInput = document.getElementById('affiliated-company-search');
         const affiliatedCompanySuggestionsContainer = document.getElementById('affiliated-company-suggestions');
+        const affiliatedCompanyIdInput = document.getElementById('affiliated_company_id');
         const newCarModelInput = document.getElementById('new_car_model');
         const carModelSuggestionsContainer = document.getElementById('car-model-suggestions');
 
         // ... (이후 함수들)
-        
+
         function populateServiceChips(data) {
             const container = document.getElementById('services-chips-container');
             container.innerHTML = '';
@@ -310,6 +303,7 @@
                 chip.addEventListener('click', () => {
                     const isActive = chip.classList.toggle('bg-blue-600');
                     chip.classList.toggle('text-white');
+                    chip.classList.toggle('border-blue-600');
                     const detailId = `service-detail-block-${item.service_category_id}`;
                     if (isActive) {
                         const block = document.createElement('div');
@@ -336,7 +330,7 @@
                 container.appendChild(chip);
             });
         }
-        
+
         function addNewServiceItemRow(wrapper, categoryId) {
             const template = document.getElementById('service-item-template').content.cloneNode(true);
             const row = template.querySelector('.service-item-row');
@@ -344,7 +338,7 @@
             const idInput = row.querySelector('.service_item_id');
             const priceInput = row.querySelector('.applied_price');
             const suggestionsContainer = row.querySelector('.service-item-suggestions');
-            const categoryItems = allServiceItems.filter(i => i.service_category_id === categoryId);
+            const categoryItems = allServiceItems.filter(i => i.service_category_id == categoryId);
 
             searchInput.addEventListener('input', () => {
                 const value = searchInput.value.toLowerCase();
@@ -358,7 +352,7 @@
                         div.textContent = item.item_name;
                         div.addEventListener('click', () => {
                             searchInput.value = item.item_name;
-                            idInput.value = item.item_id;
+                            idInput.value = item.service_item_id;
                             if (selectedCustomer) {
                                 const group = selectedCustomer.group_type;
                                 let price = item.price_a;
@@ -416,7 +410,7 @@
                 allServiceCategories = service_categories.data;
                 allServiceItems = service_items.data;
                 allAffiliatedCompanies = affiliated_companies.data;
-                allCarNames = car_names.data;
+                allCarNames = car_names.data.map(c => c.car_name);
 
                 populateServiceChips(service_categories.data);
             } catch (error) {
@@ -434,7 +428,7 @@
         async function fetchWorkOrders() {
             listLoader.classList.remove('hidden');
             workOrderList.innerHTML = '';
-            
+
             try {
                 const { data, error } = await supabaseClient
                     .from('work_orders')
@@ -442,14 +436,14 @@
                     .order('in_date', { ascending: false });
 
                 if (error) throw error;
-                
+
                 if (data.length === 0) {
                      workOrderList.innerHTML = `<div class="text-center bg-white p-6 rounded-lg shadow-sm"><p class="text-slate-500">등록된 작업이 없습니다.</p></div>`;
                 } else {
                     data.forEach(order => {
                         const orderElement = document.createElement('div');
                         orderElement.className = 'bg-white p-5 rounded-xl shadow-md cursor-pointer work-order-item';
-                        
+
                         const servicesText = order.work_order_services
                             .map(s => `<strong>${s.service_items.service_categories.service_name}:</strong> ${s.service_items.item_name} (${s.applied_price.toLocaleString()}원)`)
                             .join('<br>') || '작업 내역 없음';
@@ -487,14 +481,14 @@
             resetForm();
             currentEditingOrder = order;
             editingWorkOrderIdInput.value = order.work_order_id;
-            
+
             selectedCustomer = order.customers;
             customerSearchInput.value = order.customers.customer_name;
             customerIdInput.value = order.customer_id;
             carSearchInput.value = order.cars.car_plate_number;
             carIdInput.value = order.car_id;
             selectedCarModelText.textContent = `차종: ${order.cars.car_model || '미입력'}`;
-            
+
             if (order.out_date) {
                 const date = new Date(order.out_date);
                 date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
@@ -514,19 +508,26 @@
             });
 
             setTimeout(() => {
-                order.work_order_services.forEach((s) => {
-                    const catId = s.service_items.service_category_id;
-                    const wrapper = document.getElementById(`service-detail-block-${catId}`).querySelector('.service-items-wrapper');
-                    const newRow = addNewServiceItemRow(wrapper, catId);
-                    const lastRow = wrapper.querySelector('.service-item-row:last-child');
-                    
-                    if (lastRow) {
-                        lastRow.querySelector('.service-item-search').value = s.service_items.item_name;
-                        lastRow.querySelector('.service_item_id').value = s.service_item_id;
-                        lastRow.querySelector('.applied_price').value = s.applied_price;
+                 Object.values(servicesByCategory).forEach(services => {
+                    const catId = services[0].service_items.service_category_id;
+                    const wrapper = document.getElementById(`service-detail-block-${catId}`)?.querySelector('.service-items-wrapper');
+                    if (!wrapper) return;
+
+                    // 기존에 있던 빈 행을 제거
+                    while (wrapper.firstChild) {
+                        wrapper.removeChild(wrapper.firstChild);
                     }
+
+                    services.forEach(s => {
+                        addNewServiceItemRow(wrapper, catId); // 새 행 추가
+                        const lastRow = wrapper.lastChild; // 마지막에 추가된 행을 가져옴
+                        if (lastRow) {
+                             lastRow.querySelector('.service-item-search').value = s.service_items.item_name;
+                             lastRow.querySelector('.service_item_id').value = s.service_item_id;
+                             lastRow.querySelector('.applied_price').value = s.applied_price;
+                        }
+                    });
                 });
-                wrapper.querySelector('.service-item-row:first-child').remove();
                 updateTotalAmount();
             }, 100);
 
@@ -560,11 +561,16 @@
         }
 
         function setLoading(isLoading) {
-            saveButton.disabled = isLoading;
-            document.getElementById('update-button').disabled = isLoading;
-            buttonText.classList.toggle('hidden', isLoading);
-            buttonSpinner.classList.toggle('hidden', !isLoading);
+            const currentButton = document.getElementById('editing_work_order_id').value ? document.getElementById('update-button') : saveButton;
+            currentButton.disabled = isLoading;
+
+            const textSpan = currentButton.querySelector('span');
+            const spinner = currentButton.querySelector('svg');
+
+            if (textSpan) textSpan.classList.toggle('hidden', isLoading);
+            if (spinner) spinner.classList.toggle('hidden', !isLoading);
         }
+
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -574,12 +580,12 @@
 
             const editingId = editingWorkOrderIdInput.value;
             const itemRows = document.querySelectorAll('.service-item-row');
-            
+
             let finalTotalAmount = 0;
             itemRows.forEach(row => {
                 finalTotalAmount += parseFloat(row.querySelector('.applied_price').value) || 0;
             });
-            
+
             const workOrderPayload = {
                 customer_id: customerIdInput.value,
                 car_id: carIdInput.value,
@@ -602,10 +608,10 @@
                 if (editingId) {
                     const { error: updateError } = await supabaseClient.from('work_orders').update(workOrderPayload).eq('work_order_id', editingId);
                     if (updateError) throw updateError;
-                    
+
                     const { error: deleteError } = await supabaseClient.from('work_order_services').delete().eq('work_order_id', editingId);
                     if (deleteError) throw deleteError;
-                    
+
                     if (servicesPayload.length > 0) {
                         const payloadWithWorkOrderId = servicesPayload.map(s => ({...s, work_order_id: editingId}));
                         const { error: insertError } = await supabaseClient.from('work_order_services').insert(payloadWithWorkOrderId);
@@ -624,7 +630,7 @@
                     }
                     showNotification('작업지시서가 성공적으로 등록되었습니다!', 'success');
                 }
-                
+
                 resetForm();
                 await fetchWorkOrders();
 
@@ -640,19 +646,111 @@
         paymentButton.addEventListener('click', () => {
             paymentDetails.classList.toggle('hidden');
         });
-        
+
         function showNotification(message, type = 'success') {
              notificationMessage.textContent = message;
             notification.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-xl transition-all duration-300 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
             notification.classList.remove('hidden');
             setTimeout(() => { notification.classList.add('hidden'); }, 3000);
         }
+        
+        // --- 자동완성 및 모달 UI 로직 ---
+        function setupAutocomplete(input, container, data, displayField, valueField, onSelect) {
+            input.addEventListener('input', () => {
+                const value = input.value.toLowerCase();
+                container.innerHTML = '';
+                if (!value) {
+                    container.classList.add('hidden');
+                    return;
+                }
+                const filtered = data.filter(item => {
+                    const itemValue = (item[displayField] || '').toLowerCase();
+                    return itemValue.includes(value);
+                });
 
-        // --- 모달 관련 로직 및 기타 함수 ---
-        // (이 부분은 이전 버전의 코드를 그대로 가져와서 추가해야 합니다)
-       
-        document.addEventListener('DOMContentLoaded', () => {
-             if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_KEY') {
+                if (filtered.length > 0) {
+                    filtered.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer text-sm';
+                        div.textContent = item[displayField];
+                        div.addEventListener('click', () => {
+                            input.value = item[displayField];
+                            container.classList.add('hidden');
+                            onSelect(item);
+                        });
+                        container.appendChild(div);
+                    });
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            });
+        }
+        
+        function setupAllAutocompletes() {
+            // 고객 검색 자동완성
+            setupAutocomplete(customerSearchInput, customerSuggestionsContainer, allCustomers, 'customer_name', 'customer_id', (customer) => {
+                customerIdInput.value = customer.customer_id;
+                selectedCustomer = customer;
+            });
+
+            // 차량 검색 자동완성
+            setupAutocomplete(carSearchInput, carSuggestionsContainer, allCars, 'car_plate_number', 'car_id', (car) => {
+                carIdInput.value = car.car_id;
+                selectedCarModelText.textContent = `차종: ${car.car_model || '미입력'}`;
+            });
+            
+            // 신규 고객 모달 - 소속 회사 검색 자동완성
+            setupAutocomplete(affiliatedCompanySearchInput, affiliatedCompanySuggestionsContainer, allAffiliatedCompanies, 'company_name', 'affiliated_company_id', (company) => {
+                affiliatedCompanyIdInput.value = company.affiliated_company_id;
+            });
+            
+            // 신규 차량 모달 - 차종 자동완성
+            newCarModelInput.addEventListener('input', () => {
+                const value = newCarModelInput.value.toLowerCase();
+                carModelSuggestionsContainer.innerHTML = '';
+                if (!value) {
+                    carModelSuggestionsContainer.classList.add('hidden');
+                    return;
+                }
+                const filtered = allCarNames.filter(name => name.toLowerCase().includes(value));
+                if(filtered.length > 0) {
+                    filtered.slice(0, 10).forEach(name => { // 너무 많으면 잘라냄
+                        const div = document.createElement('div');
+                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer text-sm';
+                        div.textContent = name;
+                        div.addEventListener('click', () => {
+                            newCarModelInput.value = name;
+                            carModelSuggestionsContainer.classList.add('hidden');
+                        });
+                        carModelSuggestionsContainer.appendChild(div);
+                    });
+                    carModelSuggestionsContainer.classList.remove('hidden');
+                }
+            });
+        }
+        
+        // 고객 구분 선택 시 소속 회사 필드 표시/숨김
+        newGroupTypeSelect.addEventListener('change', (e) => {
+            const selectedValue = e.target.value;
+            if (['회사', '신차카마스터', '중고차카마스터'].includes(selectedValue)) {
+                affiliatedCompanyWrapper.classList.remove('hidden');
+            } else {
+                affiliatedCompanyWrapper.classList.add('hidden');
+                affiliatedCompanySearchInput.value = '';
+                affiliatedCompanyIdInput.value = '';
+            }
+        });
+        
+        // 외부 클릭 시 자동완성 창 닫기
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.absolute').forEach(el => el.classList.add('hidden'));
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+             if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
                 supabaseWarning.classList.remove('hidden');
                 document.querySelector('main').style.opacity = '0.5';
                 document.querySelector('main').style.pointerEvents = 'none';
@@ -661,10 +759,12 @@
 
             const { createClient } = supabase;
             supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            await loadFormData();
+            await fetchWorkOrders();
             
-            loadFormData();
-            fetchWorkOrders();
-            
+            setupAllAutocompletes();
+
             discountAmountInput.addEventListener('input', calculateFinalAmount);
 
             addCustomerButton.addEventListener('click', () => customerModal.classList.remove('hidden'));
