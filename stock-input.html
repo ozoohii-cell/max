@@ -252,8 +252,11 @@
             }
         }
         
+        // ✨ [수정됨] serial_number_prefixes 테이블에서 품목 유형을 가져오도록 수정
         function populateItemTypeDropdown() {
-            const itemTypes = [...new Set(allInventory.map(item => item.item_type).filter(Boolean))];
+            // allPrefixes 배열에서 item_type만 추출하고 중복을 제거합니다.
+            const itemTypes = [...new Set(allPrefixes.map(prefix => prefix.item_type).filter(Boolean))];
+            
             newItemTypeDropdown.innerHTML = '<option value="">-- 유형 선택 --</option>';
             itemTypes.forEach(type => {
                 const option = document.createElement('option');
