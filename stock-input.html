@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맥스콘 - 재고 입력</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">재고 입고 관리</h1>
+            <p class="text-slate-600 mt-2">여러 품목을 한 번에 입고 처리하고 관리합니다.</p>
+        </header>
+        
+        <div id="supabase-warning" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6" role="alert">
+            <p class="font-bold">중요!</p>
+            <p>Supabase URL과 Key를 입력해야 앱이 정상적으로 작동합니다.</p>
+        </div>
+
+        <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <form id="stock-form" class="space-y-6">
+                <!-- 입고 기본 정보 -->
+                <fieldset class="border p-4 rounded-lg">
+                    <legend class="text-lg font-semibold px-2">입고 정보</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="supplier-search" class="block text-sm font-medium text-slate-700 mb-1">매입처</label>
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex-grow">
+                                    <input type="text" id="supplier-search" required autocomplete="off" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" placeholder="매입처 이름 검색...">
+                                    <input type="hidden" id="supplier_id">
+                                    <div id="supplier-suggestions" class="hidden absolute z-20 w-full bg-white border border-slate-300 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-lg"></div>
+                                </div>
+                                <button type="button" id="add-supplier-button" class="flex-shrink-0 px-3 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition text-sm">추가</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="entry_date" class="block text-sm font-medium text-slate-700 mb-1">입고 날짜</label>
+                            <input type="date" id="entry_date" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 동적으로 추가되는 재고 품목들 -->
+                <fieldset class="border p-4 rounded-lg">
+                    <legend class="text-lg font-semibold px-2">입고 품목</legend>
+                    <div id="item-entries-container" class="space-y-6">
+                        <!-- 재고 품목 입력 블록이 여기에 추가됩니다 -->
+                    </div>
+                    <div class="mt-4">
+                        <button type="button" id="add-item-button" class="w-full px-4 py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 hover:border-slate-400 transition">
+                            + 품목 추가
+                        </button>
+                    </div>
+                </fieldset>
+                
+                <!-- 총액 및 저장 -->
+                <div class="pt-4 space-y-4">
+                    <div class="text-right">
+                        <p class="text-slate-600">총 매입 금액</p>
+                        <p id="total-amount-display" class="text-3xl font-bold text-slate-800">0 원</p>
+                    </div>
+                    <button type="submit" id="save-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all flex items-center justify-center">
+                        <span id="button-text">재고 입고 저장</span>
+                        <svg id="button-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- 신규 품목 추가 모달 -->
+    <div id="item-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">📦 신규 재고 품목 등록</h2>
+            <form id="new-item-form" class="space-y-4">
+                <div>
+                    <label for="new_item_name" class="block text-sm font-medium text-slate-700 mb-1">품목명 <span class="text-red-500">*</span></label>
+                    <input type="text" id="new_item_name" name="item_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                </div>
+                <div>
+                    <label for="new_item_type" class="block text-sm font-medium text-slate-700 mb-1">품목 유형 <span class="text-red-500">*</span></label>
+                    <select id="new_item_type" name="item_type" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                        <!-- 유형이 여기에 동적으로 채워집니다 -->
+                    </select>
+                </div>
+                 <div>
+                    <label for="new_purchase_price" class="block text-sm font-medium text-slate-700 mb-1">기준 입고단가 <span class="text-red-500">*</span></label>
+                    <input type="number" id="new_purchase_price" name="default_purchase_price" required class="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="0">
+                </div>
+                <div>
+                    <label for="new_min_stock" class="block text-sm font-medium text-slate-700 mb-1">최소 재고 수량</label>
+                    <input type="number" id="new_min_stock" name="min_stock" class="w-full px-4 py-2 border border-slate-300 rounded-lg" value="0">
+                </div>
+                <div class="flex items-center">
+                    <input id="new_requires_serial" name="requires_serial_number" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    <label for="new_requires_serial" class="ml-3 text-sm text-gray-600">고유 재고번호 필요</label>
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="cancel-item-button" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
+                    <button type="submit" id="save-item-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- 매입처 추가 모달 -->
+    <div id="supplier-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">🏢 신규 매입처 등록</h2>
+            <form id="new-supplier-form" class="space-y-4">
+                <div>
+                    <label for="new_supplier_name" class="block text-sm font-medium text-slate-700 mb-1">회사명 <span class="text-red-500">*</span></label>
+                    <input type="text" id="new_supplier_name" name="supplier_name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                </div>
+                 <div>
+                    <label for="new_contact_name" class="block text-sm font-medium text-slate-700 mb-1">담당자 이름</label>
+                    <input type="text" id="new_contact_name" name="contact_name" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                </div>
+                 <div>
+                    <label for="new_contact_phone" class="block text-sm font-medium text-slate-700 mb-1">담당자 전화번호</label>
+                    <input type="text" id="new_contact_phone" name="contact_phone" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                </div>
+                 <div>
+                    <label for="new_memo" class="block text-sm font-medium text-slate-700 mb-1">메모 (특이사항)</label>
+                    <textarea id="new_memo" name="memo" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg"></textarea>
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="cancel-supplier-button" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition">취소</button>
+                    <button type="submit" id="save-supplier-button" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 재고 품목 템플릿 -->
+    <template id="item-entry-template">
+        <div class="item-entry bg-slate-50 p-4 rounded-lg border relative">
+            <button type="button" class="remove-item-button absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold">&times;</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">재고 품목</label>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-grow">
+                            <input type="text" class="inventory-search w-full px-4 py-2 border border-slate-300 rounded-lg" required placeholder="품목 이름 검색...">
+                            <input type="hidden" class="inventory_id">
+                            <div class="inventory-suggestions hidden absolute z-10 w-full bg-white border border-slate-300 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-lg"></div>
+                        </div>
+                         <button type="button" class="add-new-item-button flex-shrink-0 px-3 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition text-sm">추가</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">수량</label>
+                    <input type="number" class="item-quantity w-full px-4 py-2 border border-slate-300 rounded-lg" required placeholder="0">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">매입 단가 (개당)</label>
+                    <input type="number" class="item-price w-full px-4 py-2 border border-slate-300 rounded-lg" required placeholder="0">
+                </div>
+                <div class="film-specific-fields hidden">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">롤 당 초기 길이 (m)</label>
+                    <input type="number" class="initial_length_m w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="예: 30">
+                </div>
+            </div>
+            <div class="serial-number-section hidden mt-4 p-3 bg-blue-50 rounded-md text-center">
+                 <p class="text-sm text-blue-800 serial-number-info"></p>
+            </div>
+             <div class="consumable-info-section hidden mt-4">
+                 <p class="text-center text-xs text-slate-500 bg-slate-100 p-2 rounded-lg">이 품목은 소모품으로, 총 재고에 수량이 더해집니다.</p>
+            </div>
+        </div>
+    </template>
+
+
+    <div id="notification" class="hidden fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-xl transition-transform transform">
+        <p id="notification-message"></p>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://aeleuwbpvtpmgnomftlh.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlbGV1d2JwdnRwbWdub21mdGxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2OTEzNjgsImV4cCI6MjA3MjI2NzM2OH0.0ov52DVEOrYn7TbcP0Zu-206ZnrHPo5CbWsHm3QXHvo';
+        let supabaseClient;
+
+        let allSuppliers = [];
+        let allInventory = [];
+        let allPrefixes = [];
+        
+        const form = document.getElementById('stock-form');
+        const supabaseWarning = document.getElementById('supabase-warning');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const saveButton = document.getElementById('save-button');
+        const buttonText = document.getElementById('button-text');
+        const buttonSpinner = document.getElementById('button-spinner');
+        
+        const supplierSearchInput = document.getElementById('supplier-search');
+        const supplierIdInput = document.getElementById('supplier_id');
+        const supplierSuggestionsContainer = document.getElementById('supplier-suggestions');
+        const entryDateInput = document.getElementById('entry_date');
+        
+        const itemEntriesContainer = document.getElementById('item-entries-container');
+        const addItemButton = document.getElementById('add-item-button');
+        const totalAmountDisplay = document.getElementById('total-amount-display');
+        const itemEntryTemplate = document.getElementById('item-entry-template');
+        
+        const addSupplierButton = document.getElementById('add-supplier-button');
+        const supplierModal = document.getElementById('supplier-modal');
+        const newSupplierForm = document.getElementById('new-supplier-form');
+        const cancelSupplierButton = document.getElementById('cancel-supplier-button');
+        const saveSupplierButton = document.getElementById('save-supplier-button');
+
+        const itemModal = document.getElementById('item-modal');
+        const newItemForm = document.getElementById('new-item-form');
+        const cancelItemButton = document.getElementById('cancel-item-button');
+        const saveItemButton = document.getElementById('save-item-button');
+        const newItemTypeDropdown = document.getElementById('new_item_type');
+        let activeItemEntryRow = null; 
+        
+        
+        async function loadInitialData() {
+             try {
+                const [{data: suppliers}, {data: inventory}, {data: prefixes}] = await Promise.all([
+                    supabaseClient.from('suppliers').select('*'),
+                    supabaseClient.from('inventory').select('*'),
+                    supabaseClient.from('serial_number_prefixes').select('*')
+                ]);
+                
+                if (suppliers) allSuppliers = suppliers;
+                if (inventory) allInventory = inventory;
+                if (prefixes) allPrefixes = prefixes;
+
+                populateItemTypeDropdown();
+                createSupplierAutocomplete();
+                addNewItemEntry();
+
+            } catch(error) {
+                console.error('초기 데이터 로딩 실패:', error);
+                showNotification('데이터 로딩에 실패했습니다.', 'error');
+            }
+        }
+        
+        function populateItemTypeDropdown() {
+            const itemTypes = [...new Set(allInventory.map(item => item.item_type).filter(Boolean))];
+            newItemTypeDropdown.innerHTML = '<option value="">-- 유형 선택 --</option>';
+            itemTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                newItemTypeDropdown.appendChild(option);
+            });
+        }
+        
+        function createSupplierAutocomplete() {
+            supplierSearchInput.addEventListener('input', () => {
+                const value = supplierSearchInput.value.toLowerCase();
+                supplierSuggestionsContainer.innerHTML = '';
+                supplierIdInput.value = '';
+                if (!value) {
+                    supplierSuggestionsContainer.classList.add('hidden');
+                    return;
+                }
+                
+                const filtered = allSuppliers.filter(item => item.supplier_name.toLowerCase().includes(value));
+                if (filtered.length > 0) {
+                    filtered.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer';
+                        div.textContent = item.supplier_name;
+                        div.addEventListener('click', () => {
+                            supplierSearchInput.value = item.supplier_name;
+                            supplierIdInput.value = item.supplier_id;
+                            supplierSuggestionsContainer.classList.add('hidden');
+                        });
+                        supplierSuggestionsContainer.appendChild(div);
+                    });
+                    supplierSuggestionsContainer.classList.remove('hidden');
+                } else {
+                    supplierSuggestionsContainer.classList.add('hidden');
+                }
+            });
+             document.addEventListener('click', (e) => {
+                if (!supplierSearchInput.parentElement.contains(e.target)) {
+                    supplierSuggestionsContainer.classList.add('hidden');
+                }
+            });
+        }
+        
+        function addNewItemEntry() {
+            const templateContent = itemEntryTemplate.content.cloneNode(true);
+            const entryDiv = templateContent.querySelector('.item-entry');
+            itemEntriesContainer.appendChild(templateContent);
+
+            const searchInput = entryDiv.querySelector('.inventory-search');
+            const idInput = entryDiv.querySelector('.inventory_id');
+            const suggestionsContainer = entryDiv.querySelector('.inventory-suggestions');
+            const quantityInput = entryDiv.querySelector('.item-quantity');
+            const priceInput = entryDiv.querySelector('.item-price');
+            const newItemButton = entryDiv.querySelector('.add-new-item-button');
+
+            let selectedItem = null;
+
+            searchInput.addEventListener('input', () => {
+                const value = searchInput.value.toLowerCase();
+                suggestionsContainer.innerHTML = '';
+                idInput.value = '';
+                selectedItem = null;
+                updateRowForInventoryType(entryDiv, null, 0);
+
+                if (!value) {
+                    suggestionsContainer.classList.add('hidden');
+                    return;
+                }
+                
+                const filtered = allInventory.filter(item => item.item_name.toLowerCase().includes(value));
+                 if (filtered.length > 0) {
+                    filtered.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'p-2 hover:bg-slate-100 cursor-pointer';
+                        div.textContent = `${item.item_name} (${item.item_type})`;
+                        div.addEventListener('click', () => {
+                            searchInput.value = item.item_name;
+                            idInput.value = item.item_id;
+                            selectedItem = item;
+                            suggestionsContainer.classList.add('hidden');
+                            updateRowForInventoryType(entryDiv, selectedItem, parseInt(quantityInput.value) || 0);
+                            fetchLastPurchasePrice(item.item_id, priceInput);
+                        });
+                        suggestionsContainer.appendChild(div);
+                    });
+                    suggestionsContainer.classList.remove('hidden');
+                } else {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+            
+            newItemButton.addEventListener('click', () => {
+                activeItemEntryRow = entryDiv; 
+                itemModal.classList.remove('hidden');
+            });
+
+            quantityInput.addEventListener('input', () => {
+                updateRowForInventoryType(entryDiv, selectedItem, parseInt(quantityInput.value) || 0);
+                updateTotalPrice();
+            });
+            priceInput.addEventListener('input', updateTotalPrice);
+
+            entryDiv.querySelector('.remove-item-button').addEventListener('click', () => {
+                entryDiv.remove();
+                updateTotalPrice();
+            });
+        }
+
+        async function fetchLastPurchasePrice(itemId, priceInputElement) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('inventory_detail')
+                    .select('purchase_price')
+                    .eq('inventory_id', itemId)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error; 
+
+                if (data) {
+                    priceInputElement.value = data.purchase_price;
+                }
+            } catch (error) {
+                console.error('직전 매입단가 조회 실패:', error);
+            } finally {
+                updateTotalPrice();
+            }
+        }
+        
+        function updateRowForInventoryType(rowElement, item, quantity) {
+            const serialSection = rowElement.querySelector('.serial-number-section');
+            const consumableSection = rowElement.querySelector('.consumable-info-section');
+            const filmSection = rowElement.querySelector('.film-specific-fields');
+            const serialInfo = rowElement.querySelector('.serial-number-info');
+
+            serialSection.classList.add('hidden');
+            consumableSection.classList.add('hidden');
+            filmSection.classList.add('hidden');
+            serialInfo.textContent = '';
+            
+            if (!item) return;
+
+            if (item.item_type === '필름') {
+                filmSection.classList.remove('hidden');
+            }
+
+            if (item.requires_serial_number) {
+                serialSection.classList.remove('hidden');
+                
+                const prefixInfo = allPrefixes.find(p => p.item_type === item.item_type);
+                if (!prefixInfo) {
+                    serialInfo.textContent = `오류: '${item.item_type}' 유형의 재고 번호 접두사가 설정되지 않았습니다.`;
+                    serialInfo.classList.add('text-red-600');
+                    return;
+                }
+                serialInfo.classList.remove('text-red-600');
+
+                if (quantity > 0) {
+                    const start = prefixInfo.last_sequence + 1;
+                    const end = prefixInfo.last_sequence + quantity;
+                    const formatNumber = (num) => `${prefixInfo.prefix_code}${String(num).padStart(6, '0')}`;
+                    
+                    serialInfo.innerHTML = `부여될 재고 번호: <br class="sm:hidden"> <span class="font-bold">${formatNumber(start)} ~ ${formatNumber(end)}</span>`;
+                } else {
+                    serialInfo.textContent = '수량을 입력하면 재고 번호가 자동 부여됩니다.';
+                }
+            } else {
+                consumableSection.classList.remove('hidden');
+            }
+        }
+        
+        function updateTotalPrice() {
+            const entries = document.querySelectorAll('.item-entry');
+            let total = 0;
+            entries.forEach(entry => {
+                const quantity = parseFloat(entry.querySelector('.item-quantity').value) || 0;
+                const price = parseFloat(entry.querySelector('.item-price').value) || 0;
+                total += quantity * price;
+            });
+            totalAmountDisplay.textContent = `${total.toLocaleString()} 원`;
+        }
+        
+        newSupplierForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            saveSupplierButton.disabled = true;
+            saveSupplierButton.textContent = '저장 중...';
+
+            const formData = new FormData(newSupplierForm);
+            const newSupplierData = Object.fromEntries(formData.entries());
+
+            try {
+                const { data, error } = await supabaseClient.from('suppliers').insert(newSupplierData).select().single();
+                if (error) throw error;
+
+                showNotification('신규 매입처가 등록되었습니다.', 'success');
+                allSuppliers.push(data);
+                
+                supplierSearchInput.value = data.supplier_name;
+                supplierIdInput.value = data.supplier_id;
+                
+                supplierModal.classList.add('hidden');
+                newSupplierForm.reset();
+
+            } catch(error) {
+                console.error('매입처 저장 실패:', error);
+                showNotification(`저장 실패: ${error.message}`, 'error');
+            } finally {
+                saveSupplierButton.disabled = false;
+                saveSupplierButton.textContent = '저장';
+            }
+        });
+        
+        newItemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            saveItemButton.disabled = true;
+            saveItemButton.textContent = '저장 중...';
+
+            const formData = new FormData(newItemForm);
+            const newItemData = {
+                item_name: formData.get('item_name'),
+                item_type: formData.get('item_type'),
+                min_stock: formData.get('min_stock') || 0,
+                requires_serial_number: formData.get('requires_serial_number') === 'on',
+                default_purchase_price: formData.get('default_purchase_price') || 0,
+            };
+
+            try {
+                if(!newItemData.item_type) throw new Error('품목 유형을 선택해주세요.');
+
+                const { data, error } = await supabaseClient.from('inventory').insert(newItemData).select().single();
+                if (error) throw error;
+                
+                showNotification('신규 품목이 등록되었습니다.', 'success');
+                allInventory.push(data);
+                itemModal.classList.add('hidden');
+                newItemForm.reset();
+
+                if (activeItemEntryRow) {
+                    const searchInput = activeItemEntryRow.querySelector('.inventory-search');
+                    const idInput = activeItemEntryRow.querySelector('.inventory_id');
+                    const priceInput = activeItemEntryRow.querySelector('.item-price');
+
+                    searchInput.value = data.item_name;
+                    idInput.value = data.item_id;
+                    priceInput.value = data.default_purchase_price;
+                    
+                    const event = new Event('input', { bubbles: true, cancelable: true });
+                    searchInput.dispatchEvent(event);
+                    priceInput.dispatchEvent(event);
+                }
+
+            } catch(error) {
+                console.error('품목 저장 실패:', error);
+                showNotification(`저장 실패: ${error.message}`, 'error');
+            } finally {
+                saveItemButton.disabled = false;
+                saveItemButton.textContent = '저장';
+            }
+        });
+
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoading(true);
+
+            const supplier_id = supplierIdInput.value;
+            const itemEntries = document.querySelectorAll('.item-entry');
+            
+            const serialItemsPayload = [];
+            const consumableItemsUpdates = [];
+            const prefixUpdates = {};
+
+            try {
+                if (!supplier_id) throw new Error('매입처를 선택해주세요.');
+
+                for (const entry of itemEntries) {
+                    const inventory_id = entry.querySelector('.inventory_id').value;
+                    if (!inventory_id) continue;
+                    
+                    const selectedItem = allInventory.find(i => i.item_id === inventory_id);
+                    const quantity = parseInt(entry.querySelector('.item-quantity').value, 10);
+                    const purchase_price = entry.querySelector('.item-price').value;
+                    if (isNaN(quantity) || quantity <= 0) continue;
+
+                    if (selectedItem.requires_serial_number) {
+                        const prefixInfo = allPrefixes.find(p => p.item_type === selectedItem.item_type);
+                        if (!prefixInfo) throw new Error(`'${selectedItem.item_type}' 유형의 접두사가 없습니다.`);
+                        
+                        const currentLastSeq = (prefixUpdates[prefixInfo.id]?.finalSequence) || prefixInfo.last_sequence;
+                        const startSeq = currentLastSeq + 1;
+                        const endSeq = currentLastSeq + quantity;
+
+                        let basePayload = { inventory_id, supplier_id, purchase_price };
+                        if (selectedItem.item_type === '필름') {
+                            const initialLength = parseFloat(entry.querySelector('.initial_length_m').value);
+                            if (isNaN(initialLength) || initialLength <= 0) {
+                                throw new Error(`'${selectedItem.item_name}'의 올바른 초기 길이를 입력하세요.`);
+                            }
+                            basePayload.initial_length_m = initialLength;
+                            basePayload.remaining_length_m = initialLength;
+                        }
+
+                        for (let i = startSeq; i <= endSeq; i++) {
+                            const serialNumber = `${prefixInfo.prefix_code}${String(i).padStart(6, '0')}`;
+                            serialItemsPayload.push({ ...basePayload, serial_number: serialNumber });
+                        }
+                        
+                        prefixUpdates[prefixInfo.id] = { finalSequence: endSeq };
+
+                    } else {
+                        consumableItemsUpdates.push({ id: selectedItem.item_id, amount: quantity });
+                    }
+                }
+                
+                if (serialItemsPayload.length > 0) {
+                    const { error } = await supabaseClient.from('inventory_detail').insert(serialItemsPayload);
+                    if (error) throw error;
+                }
+
+                for (const [prefixId, update] of Object.entries(prefixUpdates)) {
+                    const { error } = await supabaseClient.from('serial_number_prefixes').update({ last_sequence: update.finalSequence }).eq('id', prefixId);
+                    if (error) throw error;
+                }
+
+                if (consumableItemsUpdates.length > 0) {
+                    for(const update of consumableItemsUpdates) {
+                         const { data: currentItem, error: fetchError } = await supabaseClient
+                            .from('inventory')
+                            .select('quantity')
+                            .eq('item_id', update.id)
+                            .single();
+                        if (fetchError) throw fetchError;
+                        const newQuantity = (currentItem.quantity || 0) + update.amount;
+                        const { error: updateError } = await supabaseClient
+                            .from('inventory')
+                            .update({ quantity: newQuantity })
+                            .eq('item_id', update.id);
+                        if (updateError) throw updateError;
+                    }
+                }
+                
+                showNotification('재고가 성공적으로 입고되었습니다.', 'success');
+                form.reset();
+                itemEntriesContainer.innerHTML = '';
+                await loadInitialData();
+                updateTotalPrice();
+                entryDateInput.valueAsDate = new Date();
+
+
+            } catch (error) {
+                console.error('재고 저장 실패:', error);
+                showNotification(`저장 실패: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        function setLoading(isLoading) {
+            saveButton.disabled = isLoading;
+            buttonText.classList.toggle('hidden', isLoading);
+            buttonSpinner.classList.toggle('hidden', !isLoading);
+        }
+        function showNotification(message, type = 'success') {
+            notificationMessage.textContent = message;
+            notification.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-xl transition-all duration-300 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            notification.classList.remove('hidden');
+            setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_KEY') {
+                supabaseWarning.classList.remove('hidden');
+                return;
+            }
+            const { createClient } = supabase;
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            entryDateInput.valueAsDate = new Date();
+            loadInitialData();
+
+            addItemButton.addEventListener('click', addNewItemEntry);
+            
+            addSupplierButton.addEventListener('click', () => supplierModal.classList.remove('hidden'));
+            cancelSupplierButton.addEventListener('click', () => supplierModal.classList.add('hidden'));
+            supplierModal.addEventListener('click', (e) => {
+                if (e.target === supplierModal) {
+                    supplierModal.classList.add('hidden');
+                }
+            });
+
+            cancelItemButton.addEventListener('click', () => itemModal.classList.add('hidden'));
+            itemModal.addEventListener('click', (e) => {
+                if(e.target === itemModal) itemModal.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
